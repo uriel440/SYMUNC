@@ -1,0 +1,119 @@
+{
+  "votes": {},
+  "history": [
+    {
+      "delegateName": "莫里斯·托雷斯",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:46:30.293Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·杜克洛",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:46:24.250Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "保罗·拉马迪埃",
+      "vote": "abstain",
+      "timestamp": "2026-06-16T03:46:18.469Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "居伊·摩勒",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:46:11.846Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "罗伯特·舒曼",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:46:05.855Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "乔治·比多",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:46:00.745Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "埃德加·富尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:45:54.828Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "约瑟夫·拉尼埃尔",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:45:49.275Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "安托万·皮奈",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:45:38.379Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·苏斯戴尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:45:32.310Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "其它议员2",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:45:24.128Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "其它议员1",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:38:36.381Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "皮埃尔·孟戴斯-弗朗斯",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:25:02.688Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "皮埃尔·孟戴斯-弗朗斯",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:23:18.332Z",
+      "billId": "current",
+      "proxyBy": "Bruce"
+    }
+  ],
+  "currentBill": {
+    "id": "current",
+    "text": "",
+    "active": false
+  },
+  "completedBills": [
+    {
+      "id": 1781581590293,
+      "text": "新议案",
+      "result": "通过",
+      "yesCount": 8,
+      "noCount": 4,
+      "abstainCount": 1,
+      "timestamp": "2026-06-16T03:46:30.293Z"
+    }
+  ]
+}

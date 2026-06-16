@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 苏韵模联</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(170deg, #faf8f5 0%, #f0e8d8 40%, #e8dcc8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 360px;
+        }
+        h2 {
+            text-align: center;
+            color: #8B1A2B;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        input {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #C9A96E;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 1.1rem;
+            color: #999;
+            transition: color 0.3s;
+        }
+        .toggle-password:hover {
+            color: #8B1A2B;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #8B1A2B;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #6f1522;
+        }
+        .error {
+            color: #c0392b;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        .links a {
+            color: #8B1A2B;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>代表登录</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="username" placeholder="请输入用户名" required>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="password" placeholder="请输入密码" required>
+                <span class="toggle-password" id="togglePwd" title="显示密码">👁️</span>
+            </div>
+            <button type="submit">登 录</button>
+        </form>
+        <div class="error" id="errorMsg"></div>
+        <div class="links">
+            <a href="/register.html">注册账号</a>
+            <span style="color:#ccc;">|</span>
+            <a href="/forgot.html">忘记密码</a>
+            <span style="color:#ccc;">|</span>
+            <a href="/">返回首页</a>
+        </div>
+    </div>
+
+    <script>
+        // 密码显示/隐藏切换
+        const togglePwd = document.getElementById('togglePwd');
+        const passwordInput = document.getElementById('password');
+        togglePwd.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePwd.textContent = '🙈';
+                togglePwd.title = '隐藏密码';
+            } else {
+                passwordInput.type = 'password';
+                togglePwd.textContent = '👁️';
+                togglePwd.title = '显示密码';
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                window.location.href = '/';
+            } else {
+                document.getElementById('errorMsg').textContent = data.error;
+            }
+        });
+    </script>
+</body>
+</html>

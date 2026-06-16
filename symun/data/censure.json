@@ -1,0 +1,228 @@
+{
+  "active": false,
+  "votes": {
+    "yes": [],
+    "no": [],
+    "abstain": []
+  },
+  "history": [
+    {
+      "delegateName": "系统",
+      "vote": "政府更迭",
+      "timestamp": "2026-06-16T03:26:08.172Z",
+      "action": "总理更换为：皮埃尔·孟戴斯-弗朗斯（RGR），由管理员 Bruce 执行"
+    },
+    {
+      "delegateName": "埃德加·富尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:24:41.140Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "约瑟夫·拉尼埃尔",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:24:29.700Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "安托万·皮奈",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:24:24.175Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·苏斯戴尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:24:17.520Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "其它议员2",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:24:09.447Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "其它议员1",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:24:05.365Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "莫里斯·托雷斯",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:23:59.281Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·杜克洛",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:23:54.499Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "保罗·拉马迪埃",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:23:50.373Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "居伊·摩勒",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:23:41.636Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "罗伯特·舒曼",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:23:36.231Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "乔治·比多",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:23:29.615Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "皮埃尔·孟戴斯-弗朗斯",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:23:22.893Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·苏斯戴尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:23:09.724Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "约瑟夫·拉尼埃尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:23:05.379Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "约瑟夫·拉尼埃尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:23:01.845Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "安托万·皮奈",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:22:57.406Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "皮埃尔·孟戴斯-弗朗斯",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:22:52.002Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "皮埃尔·孟戴斯-弗朗斯",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:12:00.277Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "其它议员2",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:11:17.243Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "其它议员1",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:11:13.965Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "莫里斯·托雷斯",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:11:04.265Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·杜克洛",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:11:00.790Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "保罗·拉马迪埃",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:10:53.836Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "居伊·摩勒",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:10:49.307Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "罗伯特·舒曼",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:10:40.174Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "乔治·比多",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:10:35.133Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "埃德加·富尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:10:29.527Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "皮埃尔·孟戴斯-弗朗斯",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:10:25.903Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "约瑟夫·拉尼埃尔",
+      "vote": "no",
+      "timestamp": "2026-06-16T03:10:22.230Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "安托万·皮奈",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:10:16.542Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "delegateName": "雅克·苏斯戴尔",
+      "vote": "yes",
+      "timestamp": "2026-06-16T03:10:10.982Z",
+      "proxyBy": "Bruce"
+    }
+  ],
+  "completedCensures": [
+    {
+      "id": 1781580281140,
+      "result": "通过",
+      "yesWeight": 328,
+      "noWeight": 297,
+      "abstainWeight": 0,
+      "timestamp": "2026-06-16T03:24:41.140Z",
+      "proxyBy": "Bruce"
+    },
+    {
+      "id": 1781579477243,
+      "result": "通过",
+      "yesWeight": 425,
+      "noWeight": 200,
+      "abstainWeight": 0,
+      "timestamp": "2026-06-16T03:11:17.243Z",
+      "proxyBy": "Bruce"
+    }
+  ]
+}

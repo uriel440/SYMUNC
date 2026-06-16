@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>找回密码 - 苏韵模联</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(170deg, #faf8f5 0%, #f0e8d8 40%, #e8dcc8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 380px;
+        }
+        h2 { text-align: center; color: #8B1A2B; letter-spacing: 4px; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; color: #555; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
+        input:focus { outline: none; border-color: #C9A96E; }
+        button {
+            width: 100%; padding: 12px; background: #8B1A2B; color: #fff;
+            border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; letter-spacing: 2px;
+        }
+        button:hover { background: #6f1522; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .msg { text-align: center; margin-top: 10px; font-size: 0.9rem; }
+        .msg-success { color: #27ae60; }
+        .msg-error { color: #c0392b; }
+        .links { text-align: center; margin-top: 20px; font-size: 0.9rem; }
+        .links a { color: #8B1A2B; text-decoration: none; }
+        .links a:hover { text-decoration: underline; }
+        .code-row { display: flex; gap: 10px; }
+        .code-row input { flex: 1; }
+        .code-row button { width: auto; padding: 12px 16px; font-size: 0.85rem; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>找回密码</h2>
+        <p class="subtitle">通过绑定的邮箱重置密码</p>
+        <form id="forgotForm">
+            <div class="form-group">
+                <label>注册邮箱</label>
+                <div class="code-row">
+                    <input type="email" id="email" placeholder="请输入注册时绑定的邮箱" required>
+                    <button type="button" id="sendCodeBtn" onclick="sendCode()">获取验证码</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>验证码</label>
+                <input type="text" id="code" placeholder="请输入邮箱收到的验证码" required>
+            </div>
+            <div class="form-group">
+                <label>新密码</label>
+                <input type="password" id="newPassword" placeholder="至少6位新密码" required minlength="6">
+            </div>
+            <button type="submit">重置密码</button>
+        </form>
+        <div class="msg" id="msg"></div>
+        <div class="links">
+            <a href="/login.html">返回登录</a> ｜ <a href="/">返回首页</a>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 0;
+        let timer = null;
+
+        async function sendCode() {
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                showMsg('error', '请输入邮箱地址');
+                return;
+            }
+            if (countdown > 0) return;
+
+            const btn = document.getElementById('sendCodeBtn');
+            const res = await fetch('/api/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showMsg('success', '验证码已发送，请查收邮件');
+                countdown = 60;
+                btn.disabled = true;
+                btn.textContent = `${countdown}秒后重发`;
+                timer = setInterval(() => {
+                    countdown--;
+                    btn.textContent = `${countdown}秒后重发`;
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        btn.disabled = false;
+                        btn.textContent = '获取验证码';
+                    }
+                }, 1000);
+            } else {
+                showMsg('error', data.error);
+            }
+        }
+
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const code = document.getElementById('code').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (newPassword.length < 6) {
+                showMsg('error', '新密码至少6位');
+                return;
+            }
+
+            const res = await fetch('/api/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, code, newPassword })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showMsg('success', '密码重置成功，即将跳转登录页');
+                setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+            } else {
+                showMsg('error', data.error);
+            }
+        });
+
+        function showMsg(type, text) {
+            const msg = document.getElementById('msg');
+            msg.className = `msg msg-${type}`;
+            msg.textContent = text;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法兰西国民议会 · 第四共和国 | 苏韵模联</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "Noto Serif SC", serif;
+            background: #f0ece4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffd966;
+            padding: 20px 30px;
+            border-bottom: 3px solid #C9A96E;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header-left h1 { font-size: 1.8rem; letter-spacing: 2px; }
+        .header-left h1 small { font-size: 0.8rem; color: #ccc; }
+        .header-left .back-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: #ffd966;
+            text-decoration: none;
+        }
+        .header-right {
+            max-width: 500px;
+            min-width: 380px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 8px 12px;
+            backdrop-filter: blur(4px);
+        }
+        .header-right img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            cursor: pointer;
+        }
+        .header-right .img-caption {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 6px;
+            color: #ddd;
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .seats-panel {
+            flex: 1.2;
+            min-width: 380px;
+            padding: 20px;
+            background: #faf8f5;
+            border-right: 1px solid #e0d6c8;
+        }
+        .seats-panel h2 {
+            color: #8B1A2B;
+            border-left: 4px solid #C9A96E;
+            padding-left: 12px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .your-delegate-card {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+        }
+        .your-delegate-card h4 { color: #2c3e50; margin-bottom: 8px; }
+        .your-delegate-name { font-size: 1.2rem; font-weight: bold; color: #27ae60; }
+        .seat-map { display: flex; flex-direction: column; gap: 15px; max-height: 650px; overflow-y: auto; }
+        .party-group {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .party-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .party-header:hover { opacity: 0.9; }
+        .party-name { font-weight: bold; font-size: 1rem; }
+        .party-seats { font-size: 1.1rem; font-weight: bold; }
+        .party-members {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            background: #fefef8;
+        }
+        .party-members.open { display: flex; }
+        .member-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f0e8dc;
+            border-radius: 12px;
+            padding: 8px 12px;
+            min-width: 120px;
+            position: relative;
+        }
+        .member-badge {
+            font-size: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+        }
+        .member-badge.your-delegate {
+            background: #27ae60;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 30px;
+            padding: 6px 14px;
+        }
+        .member-badge.voted-yes { background: #27ae60; color: #fff; border-radius: 30px; padding: 6px 14px; }
+        .member-badge.voted-no { background: #c0392b; color: #fff; border-radius: 30px; padding: 6px 14px; }
+        .member-badge.voted-abstain { background: #7f8c8d; color: #fff; border-radius: 30px; padding: 6px 14px; }
+        .weight-badge {
+            font-size: 0.65rem;
+            background: rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 2px 6px;
+            margin-left: 6px;
+        }
+        .vote-status-icons {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 0.65rem;
+        }
+        .vote-status-icons span {
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .vote-icon-bill { background: #f0e8dc; }
+        .vote-icon-censure { background: #e8f0fe; }
+        .admin-controls {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .admin-controls button {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-proxy-yes { background: #27ae60; color: #fff; }
+        .btn-proxy-no { background: #c0392b; color: #fff; }
+        .btn-proxy-abstain { background: #7f8c8d; color: #fff; }
+        .btn-proxy-reset { background: #e67e22; color: #fff; }
+        .voting-panel {
+            flex: 2;
+            min-width: 500px;
+            padding: 20px;
+        }
+        .government-card {
+            background: linear-gradient(145deg, #2c2c2c, #1e1e1e);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: #eee;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .government-card h3 { color: #ffd966; margin-bottom: 12px; }
+        .prime-minister { font-size: 1.5rem; font-weight: bold; color: #C9A96E; }
+        .pm-party { font-size: 0.9rem; opacity: 0.8; margin-bottom: 15px; }
+        .coalition-info { 
+            font-size: 0.85rem; 
+            border-top: 1px solid #444; 
+            padding-top: 12px; 
+            margin-top: 8px;
+        }
+        .coalition-edit {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .coalition-edit input {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: none;
+            background: #3a3a3a;
+            color: #fff;
+        }
+        .coalition-edit button {
+            background: #C9A96E;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .vote-section {
+            background: #f9f7f3;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .vote-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8B1A2B;
+            margin-bottom: 12px;
+        }
+        .vote-description {
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #C9A96E;
+        }
+        .vote-description textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            margin-top: 8px;
+        }
+        .vote-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .vote-btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .vote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .vote-yes { background: #27ae60; color: #fff; }
+        .vote-yes:hover:not(:disabled) { background: #1e8e4d; }
+        .vote-no { background: #c0392b; color: #fff; }
+        .vote-no:hover:not(:disabled) { background: #a93226; }
+        .vote-abstain { background: #7f8c8d; color: #fff; }
+        .vote-abstain:hover:not(:disabled) { background: #6c7a7d; }
+        .result-bar {
+            background: #e0d6c8;
+            border-radius: 8px;
+            height: 32px;
+            margin: 10px 0;
+            overflow: hidden;
+            display: flex;
+        }
+        .result-yes { background: #27ae60; color: #fff; text-align: center; line-height: 32px; font-size: 0.8rem; }
+        .result-no { background: #c0392b; color: #fff; text-align: center; line-height: 32px; font-size: 0.8rem; }
+        .result-abstain { background: #7f8c8d; color: #fff; text-align: center; line-height: 32px; font-size: 0.8rem; }
+        .result-stats { margin-top: 10px; font-size: 0.85rem; color: #555; }
+        .confidence-status {
+            background: #2c3e50;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            padding-right: 8px;
+        }
+        .history-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .admin-panel {
+            background: #fef5e8;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #C9A96E;
+            display: none;
+        }
+        .admin-panel h4 { color: #8B1A2B; margin-bottom: 12px; }
+        .admin-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        .btn-admin { background: #8B1A2B; color: #fff; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; }
+        .btn-admin:hover { background: #6f1522; }
+        .vote-history-title { margin-top: 20px; font-weight: bold; color: #8B1A2B; }
+        .edit-bill-btn {
+            background: #C9A96E;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.7rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .modal-content img { width: 100%; height: auto; border-radius: 8px; }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .no-delegate-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 50px;
+        }
+        .censure-bar {
+            background: #e8f0fe;
+            border-radius: 8px;
+            height: 28px;
+            margin: 8px 0;
+            overflow: hidden;
+            display: flex;
+        }
+        .censure-yes { background: #c0392b; color: #fff; text-align: center; line-height: 28px; font-size: 0.75rem; }
+        .censure-no { background: #27ae60; color: #fff; text-align: center; line-height: 28px; font-size: 0.75rem; }
+        .censure-abstain { background: #7f8c8d; color: #fff; text-align: center; line-height: 28px; font-size: 0.75rem; }
+        .result-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: #ffd966;
+            padding: 15px 30px;
+            border-radius: 50px;
+            z-index: 1000;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(20px); visibility: hidden; }
+        }
+        @media (max-width: 900px) {
+            .main-content { flex-direction: column; }
+            .seats-panel { border-right: none; border-bottom: 1px solid #e0d6c8; }
+            .header { flex-direction: column; }
+            .header-right { max-width: 100%; min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div id="mainContainer" style="display: none;">
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="/committees/geneva.html" class="back-link">← 返回日内瓦会场</a>
+                <h1>🇫🇷 法兰西国民议会 <small>Assemblée Nationale · 第四共和国</small></h1>
+                <p style="margin-top: 8px; color: #ccc;">1954年 · 日内瓦会议联动体系 | 议员按权重计票 | 联网投票</p>
+            </div>
+            <div class="header-right">
+                <img src="/images/french-assembly-seats.jpg" alt="法兰西国民议会席位分布图" id="seatMapImage" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'500\' height=\'280\' viewBox=\'0 0 500 280\'%3E%3Crect width=\'500\' height=\'280\' fill=\'%23333\'/%3E%3Ctext x=\'250\' y=\'140\' text-anchor=\'middle\' fill=\'%23ffd966\' font-size=\'14\'%3E席位分布图%3C/text%3E%3C/svg%3E'">
+                <div class="img-caption">📊 法兰西国民议会席位分布 (1954年) — 点击图片放大</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="seats-panel">
+                <h2>📊 政党席位分布 (共625席)</h2>
+                <div id="yourDelegateCard" class="your-delegate-card" style="display:none;">
+                    <h4>👤 您所代表的议员</h4>
+                    <div class="your-delegate-name" id="yourDelegateName"></div>
+                    <p style="font-size:0.75rem; margin-top:5px;">您已获得投票权，请使用下方按钮进行投票</p>
+                </div>
+                <div class="seat-map" id="seatMap"></div>
+                <div style="margin-top: 15px; font-size: 0.7rem; color: #888; text-align: center;">
+                    🟢 绿色：已投赞成 | 🔴 红色：已投反对 | ⚪ 灰色：已投弃权<br>
+                    📜=议案投票状态 | ⚡=不信任案投票状态
+                </div>
+            </div>
+
+            <div class="voting-panel">
+                <div class="government-card">
+                    <h3>🇫🇷 法兰西第四共和国政府</h3>
+                    <div class="prime-minister" id="pmName">约瑟夫·拉尼埃尔</div>
+                    <div class="pm-party" id="pmParty">全国独立人士与农民中心 (CNIP)</div>
+                    <div class="coalition-info" id="coalitionInfo">
+                        执政联盟：<span id="coalitionText">CNIP + MRP + RGR部分成员</span><br>
+                        当前赞成票权重: <span id="supportSeats">0</span> / 625
+                    </div>
+                    <div class="coalition-edit" id="coalitionEditWrapper" style="display:none;">
+                        <input type="text" id="coalitionInput" placeholder="执政联盟描述" value="CNIP + MRP + RGR部分成员">
+                        <button id="updateCoalitionBtn">更新执政联盟</button>
+                    </div>
+                </div>
+
+                <div class="vote-section">
+                    <div class="vote-title">
+                        📜 当前投票议案
+                        <span id="editBillBtnWrapper" style="display:none;">
+                            <button class="edit-bill-btn" id="editBillBtn">✏️ 编辑议案</button>
+                            <button class="edit-bill-btn" id="resetBillBtn">🔄 重置议案</button>
+                        </span>
+                    </div>
+                    <div class="vote-description" id="billContainer">
+                        <div id="billDisplay">授权政府接受日内瓦会议达成的停战协议及印度支那和平解决方案</div>
+                        <textarea id="billEditor" style="display:none;" rows="3"></textarea>
+                    </div>
+                    <div id="voteStatus" style="margin-bottom:15px; padding:10px; background:#fff3cd; border-radius:8px; display:none;">
+                        ⚠️ 您已经投过票了，每位议员只能投票一次
+                    </div>
+                    <div class="vote-buttons">
+                        <button class="vote-btn vote-yes" id="voteYesBtn">✅ 赞成</button>
+                        <button class="vote-btn vote-no" id="voteNoBtn">❌ 反对</button>
+                        <button class="vote-btn vote-abstain" id="voteAbstainBtn">⚪ 弃权</button>
+                    </div>
+                    <div id="voteResult"></div>
+                </div>
+
+                <div class="vote-section">
+                    <div class="vote-title">⚡ 不信任案投票</div>
+                    <div class="vote-description">
+                        根据法兰西第四共和国宪法，国民议会可通过不信任案迫使政府辞职。<br>
+                        <strong>通过条件：赞成票权重 ≥ 313 席（绝对多数）</strong><br>
+                        全体议员投票完成后，不信任案自动结束并清空，结果记录在历史中
+                    </div>
+                    <div id="censureUserStatus" style="margin-bottom:15px; padding:10px; background:#fff3cd; border-radius:8px; display:none;">
+                        ⚠️ 您已经投过不信任案了
+                    </div>
+                    <div class="vote-buttons">
+                        <button class="vote-btn vote-yes" id="censureYesBtn">📜 支持不信任案</button>
+                        <button class="vote-btn vote-no" id="censureNoBtn">🛡️ 反对不信任案</button>
+                    </div>
+                    <div id="censureResult"></div>
+                    <div class="confidence-status" id="censureStatus">
+                        当前不信任案状态：未发起
+                    </div>
+                </div>
+
+                <div class="admin-panel" id="adminPanel">
+                    <h4>🔧 管理员控制台</h4>
+                    <div class="admin-buttons">
+                        <button class="btn-admin" id="changePmBtn">👔 更换总理</button>
+                        <button class="btn-admin" id="resetAllVotesBtn">🔄 重置所有历史</button>
+                        <button class="btn-admin" id="resetCensureBtn">🔄 重置不信任案</button>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <label>新总理姓名：<input type="text" id="newPmName" placeholder="输入姓名" style="padding:4px 8px;"></label>
+                        <label style="margin-left: 8px;">所属党派：<input type="text" id="newPmParty" placeholder="输入党派" style="padding:4px 8px;"></label>
+                    </div>
+                </div>
+
+                <div class="vote-history-title">📋 投票历史记录</div>
+                <div class="history-list" id="historyList">
+                    <div style="color:#999; text-align:center;">暂无记录</div>
+                </div>
+                
+                <div class="vote-history-title" style="margin-top: 15px;">📋 已完成议案记录</div>
+                <div class="history-list" id="completedBillsList">
+                    <div style="color:#999; text-align:center;">暂无记录</div>
+                </div>
+                
+                <div class="vote-history-title" style="margin-top: 15px;">📋 已完成不信任案记录</div>
+                <div class="history-list" id="completedCensuresList">
+                    <div style="color:#999; text-align:center;">暂无记录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="imageModal" class="modal">
+    <span class="close-modal">&times;</span>
+    <div class="modal-content">
+        <img id="modalImage" src="">
+    </div>
+</div>
+
+<script>
+    let currentDelegate = null;
+    let isAdmin = false;
+    let currentUser = null;
+    let pollInterval = null;
+    let censurePollInterval = null;
+    let currentBillText = "授权政府接受日内瓦会议达成的停战协议及印度支那和平解决方案";
+    let currentCoalition = "CNIP + MRP + RGR部分成员";
+    
+    // 存储每个议员的不信任案投票状态（用于显示）
+    let censureVoteStatus = {};
+
+    const DELEGATES = [
+        { id: "雅克·杜克洛", name: "雅克·杜克洛", party: "PCF", weight: 51 },
+        { id: "莫里斯·托雷斯", name: "莫里斯·托雷斯", party: "PCF", weight: 51 },
+        { id: "居伊·摩勒", name: "居伊·摩勒", party: "SFIO", weight: 53 },
+        { id: "保罗·拉马迪埃", name: "保罗·拉马迪埃", party: "SFIO", weight: 53 },
+        { id: "乔治·比多", name: "乔治·比多", party: "MRP", weight: 44 },
+        { id: "罗伯特·舒曼", name: "罗伯特·舒曼", party: "MRP", weight: 44 },
+        { id: "皮埃尔·孟戴斯-弗朗斯", name: "皮埃尔·孟戴斯-弗朗斯", party: "RGR", weight: 50 },
+        { id: "埃德加·富尔", name: "埃德加·富尔", party: "RGR", weight: 50 },
+        { id: "安托万·皮奈", name: "安托万·皮奈", party: "CNIP", weight: 47 },
+        { id: "约瑟夫·拉尼埃尔", name: "约瑟夫·拉尼埃尔", party: "CNIP", weight: 47 },
+        { id: "雅克·苏斯戴尔", name: "雅克·苏斯戴尔", party: "RPF", weight: 121 },
+        { id: "其它议员1", name: "其它议员1", party: "Others", weight: 7 },
+        { id: "其它议员2", name: "其它议员2", party: "Others", weight: 7 }
+    ];
+
+    const PARTIES = {
+        "PCF": { name: "法国共产党 (PCF)", color: "#c0392b", seats: 103 },
+        "SFIO": { name: "工人国际法国支部 (SFIO)", color: "#e67e22", seats: 106 },
+        "MRP": { name: "人民共和运动 (MRP)", color: "#2980b9", seats: 87 },
+        "RGR": { name: "共和左翼联盟 (RGR)", color: "#16a085", seats: 99 },
+        "CNIP": { name: "全国独立人士与农民中心 (CNIP)", color: "#f39c12", seats: 95 },
+        "RPF": { name: "法国人民联盟 (RPF)", color: "#2c3e50", seats: 121 },
+        "Others": { name: "其它", color: "#95a5a6", seats: 14 }
+    };
+
+    function getDelegateWeight(delegateId) {
+        const d = DELEGATES.find(d => d.id === delegateId);
+        return d ? d.weight : 0;
+    }
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.createElement('div');
+        toast.className = 'result-toast';
+        toast.style.background = isSuccess ? '#27ae60' : '#c0392b';
+        toast.style.color = '#fff';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    async function loadCensureStatus() {
+        try {
+            const res = await fetch('/api/get-censure');
+            const data = await res.json();
+            
+            // 更新不信任案投票状态显示
+            if (data.votes) {
+                censureVoteStatus = {};
+                data.votes.yes.forEach(id => { censureVoteStatus[id] = 'yes'; });
+                data.votes.no.forEach(id => { censureVoteStatus[id] = 'no'; });
+                data.votes.abstain.forEach(id => { censureVoteStatus[id] = 'abstain'; });
+            }
+            
+            if (data.completedCensures && data.completedCensures.length > 0) {
+                document.getElementById('completedCensuresList').innerHTML = data.completedCensures.slice(0, 20).map(c => `
+                    <div class="history-item">
+                        <strong>[${new Date(c.timestamp).toLocaleString()}]</strong> 
+                        不信任案 ${c.result} | 赞成: ${c.yesWeight} | 反对: ${c.noWeight} | 弃权: ${c.abstainWeight}
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('completedCensuresList').innerHTML = '<div style="color:#999; text-align:center;">暂无记录</div>';
+            }
+            
+            if (!data.active) {
+                document.getElementById('censureStatus').innerHTML = `当前不信任案状态：未发起 | 历史记录可查`;
+                document.getElementById('censureStatus').style.background = "#2c3e50";
+                document.getElementById('censureResult').innerHTML = '';
+                document.getElementById('censureYesBtn').disabled = false;
+                document.getElementById('censureNoBtn').disabled = false;
+                document.getElementById('censureUserStatus').style.display = 'none';
+                await loadVotesAndRender();
+                return;
+            }
+            
+            const stats = { yes: 0, no: 0, abstain: 0 };
+            data.votes.yes.forEach(id => { stats.yes += getDelegateWeight(id); });
+            data.votes.no.forEach(id => { stats.no += getDelegateWeight(id); });
+            data.votes.abstain.forEach(id => { stats.abstain += getDelegateWeight(id); });
+            
+            const totalWeight = DELEGATES.reduce((s, d) => s + d.weight, 0);
+            
+            document.getElementById('censureStatus').innerHTML = `🔥 不信任案进行中 | 赞成: ${stats.yes} | 反对: ${stats.no} | 弃权: ${stats.abstain} | 需要313票通过 | 已投票: ${stats.yes + stats.no + stats.abstain}/${totalWeight}`;
+            document.getElementById('censureStatus').style.background = "#c0392b";
+            
+            document.getElementById('censureResult').innerHTML = `
+                <div class="censure-bar">
+                    <div class="censure-yes" style="width: ${(stats.yes / totalWeight) * 100}%">✅ 赞成 ${stats.yes}</div>
+                    <div class="censure-no" style="width: ${(stats.no / totalWeight) * 100}%">❌ 反对 ${stats.no}</div>
+                    <div class="censure-abstain" style="width: ${(stats.abstain / totalWeight) * 100}%">⚪ 弃权 ${stats.abstain}</div>
+                </div>
+            `;
+            
+            if (currentDelegate && data.votes) {
+                const delegateKey = currentDelegate.id;
+                const hasVoted = data.votes.yes.includes(delegateKey) || data.votes.no.includes(delegateKey) || data.votes.abstain.includes(delegateKey);
+                document.getElementById('censureUserStatus').style.display = hasVoted ? 'block' : 'none';
+                document.getElementById('censureYesBtn').disabled = hasVoted;
+                document.getElementById('censureNoBtn').disabled = hasVoted;
+            }
+            
+            await loadVotesAndRender();
+        } catch(e) { console.error('加载不信任案状态失败:', e); }
+    }
+
+    async function loadVotesAndRender() {
+        try {
+            const res = await fetch('/api/get-votes');
+            const data = await res.json();
+            const votes = data.votes || {};
+            
+            if (data.currentBill && data.currentBill.text) {
+                currentBillText = data.currentBill.text;
+                document.getElementById('billDisplay').innerText = currentBillText;
+            }
+            
+            if (data.completedBills && data.completedBills.length > 0) {
+                document.getElementById('completedBillsList').innerHTML = data.completedBills.slice(0, 20).map(b => `
+                    <div class="history-item">
+                        <strong>[${new Date(b.timestamp).toLocaleString()}]</strong> 
+                        「${b.text.substring(0, 40)}${b.text.length > 40 ? '...' : ''}」 ${b.result} 
+                        (赞成:${b.yesCount} 反对:${b.noCount} 弃权:${b.abstainCount})
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('completedBillsList').innerHTML = '<div style="color:#999; text-align:center;">暂无记录</div>';
+            }
+            
+            let yesWeight = 0, noWeight = 0, abstainWeight = 0;
+            const voteStatus = {};
+            for (const [delegateId, voteInfo] of Object.entries(votes)) {
+                const weight = getDelegateWeight(delegateId);
+                voteStatus[delegateId] = voteInfo.vote;
+                if (voteInfo.vote === 'yes') yesWeight += weight;
+                else if (voteInfo.vote === 'no') noWeight += weight;
+                else if (voteInfo.vote === 'abstain') abstainWeight += weight;
+            }
+            
+            renderSeatMap(voteStatus);
+            
+            const totalWeight = DELEGATES.reduce((sum, d) => sum + d.weight, 0);
+            document.getElementById('voteResult').innerHTML = `
+                <div class="result-bar">
+                    <div class="result-yes" style="width: ${(yesWeight / totalWeight) * 100}%">✅ 赞成 ${yesWeight}</div>
+                    <div class="result-no" style="width: ${(noWeight / totalWeight) * 100}%">❌ 反对 ${noWeight}</div>
+                    <div class="result-abstain" style="width: ${(abstainWeight / totalWeight) * 100}%">⚪ 弃权 ${abstainWeight}</div>
+                </div>
+                <div class="result-stats">
+                    已投票权重: ${yesWeight + noWeight + abstainWeight} / ${totalWeight} | 赞成: ${yesWeight} | 反对: ${noWeight} | 弃权: ${abstainWeight}
+                </div>
+            `;
+            document.getElementById('supportSeats').innerText = yesWeight;
+            
+            if (data.history && data.history.length > 0) {
+                document.getElementById('historyList').innerHTML = data.history.slice(0, 30).map(h => `
+                    <div class="history-item">
+                        <strong>[${new Date(h.timestamp).toLocaleString()}]</strong> ${h.delegateName} 
+                        ${h.vote === 'yes' ? '✅ 赞成' : (h.vote === 'no' ? '❌ 反对' : (h.vote === 'abstain' ? '⚪ 弃权' : '🔄 重置'))}
+                        ${h.proxyBy ? `<span style="color:#e67e22;"> (管理员代投: ${h.proxyBy})</span>` : ''}
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('historyList').innerHTML = '<div style="color:#999; text-align:center;">暂无投票记录</div>';
+            }
+            
+            if (currentDelegate && voteStatus[currentDelegate.id]) {
+                document.getElementById('voteStatus').style.display = 'block';
+                const btns = document.querySelectorAll('.vote-section .vote-btn');
+                btns.forEach(btn => btn.disabled = true);
+            } else {
+                document.getElementById('voteStatus').style.display = 'none';
+                const btns = document.querySelectorAll('.vote-section .vote-btn');
+                btns.forEach(btn => btn.disabled = false);
+            }
+        } catch(e) { console.error('加载投票数据失败:', e); }
+    }
+
+    function renderSeatMap(voteStatus) {
+        let html = '';
+        for (const [partyKey, party] of Object.entries(PARTIES)) {
+            const partyDelegates = DELEGATES.filter(d => d.party === partyKey);
+            if (partyDelegates.length === 0) continue;
+            html += `
+                <div class="party-group">
+                    <div class="party-header" style="background: ${party.color}20; border-left: 4px solid ${party.color};" onclick="togglePartyMembers('${partyKey}')">
+                        <span class="party-name" style="color: ${party.color};">${party.name}</span>
+                        <span class="party-seats">${party.seats}席</span>
+                    </div>
+                    <div class="party-members" id="party-${partyKey}">
+                        ${partyDelegates.map(d => {
+                            let voteClass = '';
+                            let voteText = '';
+                            if (voteStatus[d.id] === 'yes') { voteClass = 'voted-yes'; voteText = '✅'; }
+                            else if (voteStatus[d.id] === 'no') { voteClass = 'voted-no'; voteText = '❌'; }
+                            else if (voteStatus[d.id] === 'abstain') { voteClass = 'voted-abstain'; voteText = '⚪'; }
+                            
+                            const isYourDelegate = currentDelegate && currentDelegate.id === d.id;
+                            const isOtherParty = d.party === 'Others';
+                            
+                            // 不信任案投票状态
+                            let censureIcon = '';
+                            if (censureVoteStatus[d.id] === 'yes') censureIcon = '<span style="background:#c0392b20; padding:2px 4px; border-radius:4px;">📜</span>';
+                            else if (censureVoteStatus[d.id] === 'no') censureIcon = '<span style="background:#27ae6020; padding:2px 4px; border-radius:4px;">🛡️</span>';
+                            else if (censureVoteStatus[d.id] === 'abstain') censureIcon = '<span style="background:#7f8c8d20; padding:2px 4px; border-radius:4px;">⚪</span>';
+                            
+                            return `
+                                <div class="member-item">
+                                    <div class="member-badge ${voteClass} ${isYourDelegate ? 'your-delegate' : ''}">
+                                        ${d.name}<span class="weight-badge">${d.weight}票</span> ${voteText}
+                                        ${isOtherParty ? '<span style="font-size:0.6rem; margin-left:4px;">(管理员代投)</span>' : ''}
+                                    </div>
+                                    <div class="vote-status-icons">
+                                        <span class="vote-icon-bill">📜 ${voteText || '未投'}</span>
+                                        <span class="vote-icon-censure">⚡ ${censureIcon || '未投'}</span>
+                                    </div>
+                                    ${isAdmin ? `
+                                        <div class="admin-controls">
+                                            <button class="btn-proxy-yes" onclick="proxyVote('${d.id}', 'yes')">赞成</button>
+                                            <button class="btn-proxy-no" onclick="proxyVote('${d.id}', 'no')">反对</button>
+                                            <button class="btn-proxy-abstain" onclick="proxyVote('${d.id}', 'abstain')">弃权</button>
+                                            <button class="btn-proxy-reset" onclick="proxyCensureVote('${d.id}', 'yes')">不信任赞成</button>
+                                            <button class="btn-proxy-reset" onclick="proxyCensureVote('${d.id}', 'no')" style="background:#27ae60;">不信任反对</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        document.getElementById('seatMap').innerHTML = html;
+    }
+
+    window.togglePartyMembers = function(partyKey) {
+        const el = document.getElementById(`party-${partyKey}`);
+        if (el) el.classList.toggle('open');
+    };
+
+    async function proxyVote(delegateId, voteType) {
+        if (!isAdmin) { alert('只有管理员可以代投'); return; }
+        const voteText = voteType === 'yes' ? '赞成' : (voteType === 'no' ? '反对' : '弃权');
+        if (!confirm(`确定要为 ${delegateId} 投出 ${voteText} 票吗？`)) return;
+        
+        try {
+            const res = await fetch('/api/admin/proxy-vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ delegateId, voteType, billId: 'current' })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (data.allVoted && data.result) {
+                    showToast(`📊 议案投票结束！${data.result.passed ? '✅ 议案通过' : '❌ 议案不通过'} (赞成:${data.result.yesCount} 反对:${data.result.noCount})`, data.result.passed);
+                }
+                await loadVotesAndRender();
+                alert(`✅ 已为 ${delegateId} 记录${voteText}投票`);
+            } else {
+                alert(data.error || '操作失败');
+            }
+        } catch(e) { alert('网络错误'); }
+    }
+
+    async function proxyCensureVote(delegateId, voteType) {
+        if (!isAdmin) { alert('只有管理员可以代投'); return; }
+        const voteText = voteType === 'yes' ? '支持不信任案' : '反对不信任案';
+        if (!confirm(`确定要为 ${delegateId} 投出 ${voteText} 吗？`)) return;
+        
+        try {
+            const res = await fetch('/api/admin/proxy-censure-vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ delegateId, voteType })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (data.allVoted && data.result) {
+                    showToast(`⚡ 不信任案投票结束！${data.result.passed ? '⚠️ 不信任案通过' : '✅ 不信任案不通过'} (赞成:${data.result.yesWeight} 反对:${data.result.noWeight})`, !data.result.passed);
+                }
+                await loadCensureStatus();
+                alert(`✅ 已为 ${delegateId} 记录${voteText}`);
+            } else {
+                alert(data.error || '操作失败');
+            }
+        } catch(e) { alert('网络错误'); }
+    }
+
+    async function submitVote(voteType) {
+        if (!currentDelegate) { alert('您不是议员，无权投票'); return; }
+        try {
+            const res = await fetch('/api/submit-vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ voteType, billId: 'current' })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (data.allVoted && data.result) {
+                    showToast(`📊 议案投票结束！${data.result.passed ? '✅ 议案通过' : '❌ 议案不通过'} (赞成:${data.result.yesCount} 反对:${data.result.noCount})`, data.result.passed);
+                }
+                await loadVotesAndRender();
+                alert(`✅ 投票成功！您已投出${voteType === 'yes' ? '赞成' : (voteType === 'no' ? '反对' : '弃权')}票`);
+            } else {
+                alert(data.error || '投票失败');
+            }
+        } catch(e) { alert('网络错误'); }
+    }
+
+    async function submitCensureVote(voteType) {
+        if (!currentDelegate) { alert('您不是议员，无权投票'); return; }
+        try {
+            const res = await fetch('/api/submit-censure-vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ voteType })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (data.allVoted && data.result) {
+                    showToast(`⚡ 不信任案投票结束！${data.result.passed ? '⚠️ 不信任案通过' : '✅ 不信任案不通过'} (赞成:${data.result.yesWeight} 反对:${data.result.noWeight})`, !data.result.passed);
+                }
+                await loadCensureStatus();
+                alert(`✅ 不信任案投票成功！您已投出${voteType === 'yes' ? '支持' : '反对'}票`);
+            } else {
+                alert(data.error || '投票失败');
+            }
+        } catch(e) { alert('网络错误'); }
+    }
+
+    async function setNewBill() {
+        const newText = prompt('请输入新的议案内容:', currentBillText);
+        if (newText && newText.trim()) {
+            const res = await fetch('/api/set-current-bill', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ billText: newText.trim() })
+            });
+            if (res.ok) {
+                await loadVotesAndRender();
+                showToast(`📜 新议案已发布：「${newText.trim().substring(0, 50)}${newText.trim().length > 50 ? '...' : ''}」`, true);
+            }
+        }
+    }
+
+    async function resetBill() {
+        if (!confirm('确定重置当前议案吗？这将清空所有投票记录并开始新议案。')) return;
+        const res = await fetch('/api/admin/reset-bill', { method: 'POST' });
+        if (res.ok) {
+            await loadVotesAndRender();
+            showToast('议案已重置，可开始新投票', true);
+        }
+    }
+
+    async function resetAllHistory() {
+        if (!confirm('确定重置所有历史记录吗？这将清空投票历史和已完成议案记录。')) return;
+        await fetch('/api/admin/reset-votes', { method: 'POST' });
+        await loadVotesAndRender();
+        showToast('所有历史记录已清空', true);
+    }
+
+    async function resetCensure() {
+        if (!confirm('确定重置不信任案吗？这将结束当前不信任案并清空所有不信任案投票记录。')) return;
+        const res = await fetch('/api/admin/reset-censure', { method: 'POST' });
+        if (res.ok) {
+            await loadCensureStatus();
+            showToast('不信任案已重置', true);
+        }
+    }
+    
+    async function updateCoalition() {
+        const newCoalition = document.getElementById('coalitionInput').value.trim();
+        if (newCoalition) {
+            currentCoalition = newCoalition;
+            document.getElementById('coalitionText').innerText = currentCoalition;
+            localStorage.setItem('suyun_coalition', currentCoalition);
+            showToast('执政联盟已更新', true);
+        }
+    }
+
+    async function initParliament() {
+        try {
+            // 加载保存的执政联盟
+            const savedCoalition = localStorage.getItem('suyun_coalition');
+            if (savedCoalition) {
+                currentCoalition = savedCoalition;
+                document.getElementById('coalitionText').innerText = currentCoalition;
+                document.getElementById('coalitionInput').value = currentCoalition;
+            }
+            
+            const meRes = await fetch('/api/me');
+            if (!meRes.ok) { alert('请先登录'); window.location.href = '/login.html'; return; }
+            currentUser = await meRes.json();
+            
+            const delegateRes = await fetch('/api/my-delegate');
+            const delegateData = await delegateRes.json();
+            
+            if (!delegateData.delegateId && !delegateData.isAdmin) {
+                document.getElementById('mainContainer').innerHTML = `
+                    <div class="no-delegate-warning">
+                        <h3>⚠️ 您未被指定为议员</h3>
+                        <p>请联系管理员为您分配议员身份，以便参与投票。</p>
+                        <a href="/" style="color:#8B1A2B;">返回首页</a>
+                    </div>
+                `;
+                document.getElementById('mainContainer').style.display = 'block';
+                return;
+            }
+            
+            if (delegateData.delegateId) {
+                currentDelegate = DELEGATES.find(d => d.id === delegateData.delegateId);
+                if (currentDelegate) {
+                    document.getElementById('yourDelegateCard').style.display = 'block';
+                    document.getElementById('yourDelegateName').innerHTML = `${currentDelegate.name} (${currentDelegate.weight}票)`;
+                }
+            }
+            
+            isAdmin = delegateData.isAdmin || false;
+            if (isAdmin) {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('editBillBtnWrapper').style.display = 'inline';
+                document.getElementById('coalitionEditWrapper').style.display = 'flex';
+                document.getElementById('editBillBtn').onclick = setNewBill;
+                document.getElementById('resetBillBtn').onclick = resetBill;
+                document.getElementById('resetAllVotesBtn').onclick = resetAllHistory;
+                document.getElementById('resetCensureBtn').onclick = resetCensure;
+                document.getElementById('updateCoalitionBtn').onclick = updateCoalition;
+                
+                // 总理更换功能
+                document.getElementById('changePmBtn').onclick = async () => {
+                    const newName = document.getElementById('newPmName').value.trim();
+                    const newParty = document.getElementById('newPmParty').value.trim();
+                    
+                    if (!newName) {
+                        alert('请输入新总理姓名');
+                        return;
+                    }
+                    if (!newParty) {
+                        alert('请输入新总理所属党派');
+                        return;
+                    }
+                    
+                    if (!confirm(`确定要将总理更换为「${newName}（${newParty}）」吗？\n此操作将记录在议会历史中。`)) return;
+                    
+                    try {
+                        const res = await fetch('/api/admin/set-prime-minister', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newName, party: newParty })
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            document.getElementById('pmName').innerText = newName;
+                            document.getElementById('pmParty').innerText = newParty;
+                            document.getElementById('newPmName').value = '';
+                            document.getElementById('newPmParty').value = '';
+                            showToast(`✅ 总理已更换为 ${newName}（${newParty}）`, true);
+                            await loadCensureStatus();
+                        } else {
+                            alert(data.error || '更换失败');
+                        }
+                    } catch(e) {
+                        alert('网络错误，请重试');
+                    }
+                };
+            }
+            
+            // 加载当前总理信息
+            async function loadPrimeMinister() {
+                try {
+                    const res = await fetch('/api/get-prime-minister');
+                    if (res.ok) {
+                        const pm = await res.json();
+                        document.getElementById('pmName').innerText = pm.name;
+                        document.getElementById('pmParty').innerText = pm.party;
+                    }
+                } catch(e) {
+                    console.error('加载总理信息失败:', e);
+                }
+            }
+            await loadPrimeMinister();
+            
+            document.getElementById('voteYesBtn').onclick = () => submitVote('yes');
+            document.getElementById('voteNoBtn').onclick = () => submitVote('no');
+            document.getElementById('voteAbstainBtn').onclick = () => submitVote('abstain');
+            document.getElementById('censureYesBtn').onclick = () => submitCensureVote('yes');
+            document.getElementById('censureNoBtn').onclick = () => submitCensureVote('no');
+            
+            await loadVotesAndRender();
+            await loadCensureStatus();
+            document.querySelectorAll('.party-members').forEach(el => el.classList.add('open'));
+            
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(loadVotesAndRender, 3000);
+            if (censurePollInterval) clearInterval(censurePollInterval);
+            censurePollInterval = setInterval(loadCensureStatus, 3000);
+            
+            document.getElementById('mainContainer').style.display = 'block';
+        } catch(e) {
+            console.error('初始化议会失败:', e);
+            document.getElementById('mainContainer').innerHTML = `
+                <div class="no-delegate-warning">
+                    <h3>⚠️ 加载失败</h3>
+                    <p>请刷新页面重试，或联系管理员。</p>
+                    <a href="/" style="color:#8B1A2B;">返回首页</a>
+                </div>
+            `;
+            document.getElementById('mainContainer').style.display = 'block';
+        }
+    }
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const seatMapImage = document.getElementById('seatMapImage');
+    if (seatMapImage) {
+        seatMapImage.onclick = function() {
+            modal.style.display = 'flex';
+            modalImg.src = this.src;
+        }
+    }
+    document.querySelector('.close-modal').onclick = function() { modal.style.display = 'none'; }
+    window.onclick = function(event) { if (event.target == modal) modal.style.display = 'none'; }
+    
+    initParliament();
+</script>
+</body>
+</html>

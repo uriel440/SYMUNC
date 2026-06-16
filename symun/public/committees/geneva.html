@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>危机联动委员会 · 1954日内瓦会议 | 苏韵模联</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: "Microsoft YaHei", "Noto Serif SC", serif; 
+            background: #f5f0e8; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 1500px; 
+            margin: auto; 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 28px rgba(0,0,0,0.1); 
+        }
+        h1 { color: #8B1A2B; border-left: 6px solid #C9A96E; padding-left: 20px; margin-top: 0; }
+        h2 { color: #8B1A2B; border-bottom: 2px solid #C9A96E; padding-bottom: 8px; margin: 25px 0 15px 0; font-size: 1.5rem; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #8B1A2B; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+        .restricted-badge { background: #c0392b; color: white; padding: 4px 14px; border-radius: 30px; font-size: 0.8rem; margin-left: 15px; vertical-align: middle; }
+        .tag { background: #f0e8d8; color: #8B1A2B; padding: 4px 14px; border-radius: 30px; font-size: 0.8rem; display: inline-block; margin-bottom: 12px; }
+        
+        #map-container { margin: 20px 0 10px; position: relative; border-radius: 12px; overflow: hidden; border: 2px solid #C9A96E; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        #map { height: 600px; width: 100%; background: #1a2a3a; z-index: 1; }
+        
+        .timeline-controls {
+            background: #2c2c2c;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            color: #eee;
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        .timeline-date { font-size: 1.3rem; font-weight: bold; color: #ffd966; font-family: monospace; }
+        .timeline-event { font-size: 0.9rem; color: #ffaaa5; max-width: 450px; }
+        .timeline-slider { flex: 1; min-width: 200px; }
+        input[type="range"] { width: 100%; height: 6px; -webkit-appearance: none; background: #555; border-radius: 3px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #C9A96E; cursor: pointer; }
+        .timeline-buttons { display: flex; gap: 10px; }
+        .timeline-buttons button { background: #8B1A2B; border: none; color: white; padding: 6px 16px; border-radius: 30px; cursor: pointer; }
+        .play-btn { background: #2c6e2c !important; }
+        
+        .map-toolbar { display: flex; gap: 12px; align-items: center; margin: 10px 0 5px; flex-wrap: wrap; justify-content: space-between; }
+        .btn-reset, .btn-edit { background: #8B1A2B; color: white; border: none; padding: 8px 18px; border-radius: 40px; cursor: pointer; font-weight: bold; }
+        .btn-edit.active { background: #2c6e2c; }
+        .map-legend {
+            background: rgba(30,30,35,0.85);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            line-height: 1.5;
+            color: #f0f0f0;
+            border-left: 4px solid #C9A96E;
+            max-width: 260px;
+        }
+        .drag-status { font-size: 0.8rem; background: #f0ece4; padding: 6px 12px; border-radius: 40px; color: #2c3e2f; }
+        .section { margin: 35px 0 25px; border-top: 1px solid #e0d6c8; padding-top: 20px; }
+        .file-list { list-style: none; padding: 0; }
+        .file-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0e8dc; flex-wrap: wrap; gap: 8px; }
+        .upload-form { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; background: #faf7f2; padding: 15px; border-radius: 20px; }
+        button, .btn-small { background: #8B1A2B; color: white; border: none; padding: 6px 16px; border-radius: 30px; cursor: pointer; }
+        .btn-del { background: #c0392b; }
+        .hidden { display: none; }
+        .admin-only { background: #fef5e8; border-left: 4px solid #C9A96E; padding: 10px 15px; margin-top: 20px; }
+        .map-hint { color: #7f8c8d; font-size: 0.75rem; text-align: center; margin-top: 6px; }
+        .parliament-entry {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        .parliament-btn {
+            background: #8B1A2B;
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .parliament-btn:hover {
+            background: #6f1522;
+            transform: scale(1.02);
+        }
+        .stats-panel {
+            background: #f9f7f3;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-left: 4px solid #C9A96E;
+        }
+        .stats-summary {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.8rem;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 5px 10px;
+            background: #fff;
+            border-radius: 8px;
+            min-width: 80px;
+        }
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .stat-good { color: #27ae60; }
+        .stat-warning { color: #e67e22; }
+        .stat-danger { color: #c0392b; }
+        @media (max-width: 700px) { .container { padding: 18px; } #map { height: 450px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="/" class="back-link">← 返回首页</a>
+    <h1>⚡ 危机联动委员会 · 日内瓦会议联动体系 <span class="restricted-badge">1954·印支战火</span></h1>
+    <p><span class="tag">军事推演 | 完整战斗序列 | 动态兵力/补给/士气 | 战役时间轴</span></p>
+    
+    <div class="parliament-entry">
+        <a href="/committees/parliament.html" target="_blank" class="parliament-btn">
+            🏛️ 进入法兰西国民议会
+        </a>
+    </div>
+    
+    <div class="timeline-controls">
+        <div class="timeline-header">
+            <div class="timeline-date" id="timelineDate">1954年3月13日</div>
+            <div class="timeline-event" id="timelineEvent">战役开始：越盟进攻奠边府</div>
+            <div class="timeline-buttons">
+                <button id="rewindBtn">⏮ 开始</button>
+                <button id="playPauseBtn" class="play-btn">▶ 播放</button>
+                <button id="resetTimelineBtn">🔄 重置</button>
+            </div>
+        </div>
+        <input type="range" id="timelineSlider" class="timeline-slider" min="0" max="100" value="0">
+        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; margin-top: 5px; color: #aaa;">
+            <span>3/13</span><span>3/20</span><span>3/30</span><span>4/10</span><span>4/20</span><span>5/1</span><span>5/7</span>
+        </div>
+    </div>
+    
+    <!-- 全局战况统计面板 -->
+    <div class="stats-panel">
+        <div class="stats-summary" id="globalStats">
+            <div class="stat-item">🇻🇳 越盟总兵力: <span id="vmTotalManpower" class="stat-value stat-good">0</span> 人</div>
+            <div class="stat-item">🇫🇷 法军总兵力: <span id="frTotalManpower" class="stat-value stat-good">0</span> 人</div>
+            <div class="stat-item">📦 平均补给: <span id="avgSupply" class="stat-value">0</span>%</div>
+            <div class="stat-item">💪 平均士气: <span id="avgMorale" class="stat-value">0</span>%</div>
+        </div>
+    </div>
+    
+    <div id="map-container">
+        <div class="map-toolbar">
+            <div>
+                <button class="btn-reset" id="resetMapBtn">🔄 重置兵牌位置</button>
+                <button class="btn-edit" id="toggleDragBtn">✋ 编辑模式 (拖动兵牌)</button>
+            </div>
+            <div id="dragStatus" class="drag-status">⚙️ 未开启编辑</div>
+        </div>
+        <div id="map"></div>
+        <p class="map-hint">🗺️ 点击兵牌查看兵力/补给/士气详情 | 蓝色:越盟 | 红色:法军 | 绿色虚线:胡志明小道</p>
+    </div>
+
+    <div class="section" id="academicSec">
+        <h2>📂 学术文件</h2>
+        <ul class="file-list" id="academicFiles"><li>加载中…</li></ul>
+    </div>
+    <div class="section" id="positionSection" style="display:none;">
+        <h2>📤 上传立场文件</h2>
+        <form id="positionForm" class="upload-form">
+            <input type="file" id="positionFile" accept=".pdf,.doc,.docx,.txt" required><button type="submit">上传</button>
+        </form>
+        <div id="uploadMsg"></div>
+        <h3>我的立场文件</h3>
+        <ul class="file-list" id="myPositions"><li>暂无立场文件</li></ul>
+    </div>
+    <div class="section" id="quizSection" style="display:none;">
+        <h2>📝 学术测验</h2>
+        <form id="quizForm" class="upload-form">
+            <input type="file" id="quizFile" required><button type="submit">上传测验</button>
+        </form>
+        <div id="quizMsg"></div>
+        <h3>测验列表</h3>
+        <ul class="file-list" id="quizList"><li>暂无学术测验</li></ul>
+    </div>
+    <div class="section" id="newsSection" style="display:none;">
+        <h2>📰 危机联动新闻</h2>
+        <form id="newsForm" class="upload-form" style="display:none;">
+            <input type="text" id="newsTitle" placeholder="新闻标题" style="padding:6px 12px; border-radius:30px; border:1px solid #ccc;">
+            <input type="file" id="newsFile" required><button type="submit">上传新闻</button>
+        </form>
+        <div id="newsMsg"></div>
+        <ul class="file-list" id="newsList"><li>暂无新闻</li></ul>
+    </div>
+    <div class="section admin-only hidden" id="adminSection">
+        <h2>🔧 管理员通道</h2>
+        <h3>上传学术文件</h3>
+        <form id="adminForm" class="upload-form">
+            <input type="file" id="adminFile" required>
+            <label><input type="checkbox" id="visibleCheck"> 立即可见</label>
+            <button type="submit">上传</button>
+        </form>
+        <div id="adminMsg"></div>
+        <h3>管理文件</h3>
+        <ul class="file-list" id="allFiles"></ul>
+        <h3>管理测验</h3>
+        <ul class="file-list" id="allQuizzes"></ul>
+        <h3>管理新闻</h3>
+        <ul class="file-list" id="allNews"></ul>
+    </div>
+</div>
+
+<script>
+    const committee = 'geneva';
+    let currentUser = null;
+    
+    // ========== 完整战斗序列（35支部队）==========
+    const UNITS_BASE = {
+        // 越南人民军 - 9个师
+        "vm_304": { name: "第304师", faction: "vietminh", type: "infantry", unitCode: "304 INF", region: "北圻—清化省", initialManpower: 12000 },
+        "vm_308": { name: "第308师 (先锋师)", faction: "vietminh", type: "infantry", unitCode: "308 INF", region: "北圻西北部", initialManpower: 14000 },
+        "vm_312": { name: "第312师 (胜利师)", faction: "vietminh", type: "infantry", unitCode: "312 INF", region: "奠边府东翼", initialManpower: 13000 },
+        "vm_316": { name: "第316师", faction: "vietminh", type: "infantry", unitCode: "316 INF", region: "奠边府西北部", initialManpower: 11000 },
+        "vm_320": { name: "第320师", faction: "vietminh", type: "infantry", unitCode: "320 INF", region: "红河三角洲南翼", initialManpower: 10000 },
+        "vm_325": { name: "第325师", faction: "vietminh", type: "infantry", unitCode: "325 INF", region: "中部（乂安–河静）", initialManpower: 9000 },
+        "vm_351": { name: "第351重炮师", faction: "vietminh", type: "artillery", unitCode: "351 ARTY", region: "北部战区，奠边府", initialManpower: 8000 },
+        "vm_330": { name: "第330师", faction: "vietminh", type: "infantry", unitCode: "330 INF", region: "南圻、柬边地区", initialManpower: 8000 },
+        "vm_304b": { name: "第304B师", faction: "vietminh", type: "infantry", unitCode: "304B INF", region: "红河三角洲地区", initialManpower: 8000 },
+        
+        // 法国远征军 - 26支部队
+        "fr_gm1": { name: "GM1机动群", faction: "france", type: "mechanized", unitCode: "GM1", region: "北圻红河三角洲", initialManpower: 3500 },
+        "fr_gm2": { name: "GM2机动群", faction: "france", type: "mechanized", unitCode: "GM2", region: "北圻", initialManpower: 3500 },
+        "fr_gm3": { name: "GM3机动群", faction: "france", type: "mechanized", unitCode: "GM3", region: "北圻", initialManpower: 3500 },
+        "fr_gm4": { name: "GM4机动群", faction: "france", type: "mechanized", unitCode: "GM4", region: "北圻–太原", initialManpower: 3500 },
+        "fr_gm5": { name: "GM5机动群", faction: "france", type: "mechanized", unitCode: "GM5", region: "北圻–永安", initialManpower: 3500 },
+        "fr_gm6": { name: "GM6机动群", faction: "france", type: "mechanized", unitCode: "GM6", region: "北圻—海防地区", initialManpower: 3500 },
+        "fr_gm7": { name: "GM7机动群", faction: "france", type: "mechanized", unitCode: "GM7", region: "中北部", initialManpower: 3500 },
+        "fr_gm8": { name: "GM8机动群", faction: "france", type: "mechanized", unitCode: "GM8", region: "红河三角洲", initialManpower: 3500 },
+        "fr_gm100": { name: "GM100机动群", faction: "france", type: "mechanized", unitCode: "GM100", region: "中部高原", initialManpower: 3000 },
+        "fr_1bep": { name: "第1外籍伞兵团", faction: "france", type: "airborne", unitCode: "1er BEP", region: "奠边府", initialManpower: 2500 },
+        "fr_2bep": { name: "第2外籍伞兵团", faction: "france", type: "airborne", unitCode: "2e BEP", region: "北圻", initialManpower: 2500 },
+        "fr_6bpc": { name: "第6殖民伞兵营", faction: "france", type: "airborne", unitCode: "6e BPC", region: "奠边府", initialManpower: 2000 },
+        "fr_1bpc": { name: "第1殖民伞兵营", faction: "france", type: "airborne", unitCode: "1er BPC", region: "奠边府", initialManpower: 2000 },
+        "fr_2bpc": { name: "第2殖民伞兵营", faction: "france", type: "airborne", unitCode: "2e BPC", region: "奠边府", initialManpower: 2000 },
+        "fr_5bpvn": { name: "第5越南伞兵营", faction: "france", type: "airborne", unitCode: "5e BPVN", region: "奠边府", initialManpower: 1500 },
+        "fr_1bpl": { name: "第1老挝伞兵营", faction: "france", type: "airborne", unitCode: "1er BPL", region: "老挝境内", initialManpower: 1500 },
+        "fr_13dble": { name: "第13外籍半旅", faction: "france", type: "infantry", unitCode: "13e DBLE", region: "奠边府与北圻", initialManpower: 4000 },
+        "fr_3moroccan": { name: "第3摩洛哥步兵团", faction: "france", type: "infantry", unitCode: "3e RIM", region: "红河与中部", initialManpower: 3000 },
+        "fr_5algerian": { name: "第5阿尔及利亚团", faction: "france", type: "infantry", unitCode: "5e RTA", region: "红河与中部", initialManpower: 3000 },
+        "fr_3ric": { name: "第3殖民地步兵团", faction: "france", type: "infantry", unitCode: "3e RIC", region: "红河三角洲", initialManpower: 3000 },
+        "fr_1rec": { name: "第1外籍骑兵团", faction: "france", type: "mechanized", unitCode: "1er REC", region: "北圻", initialManpower: 2500 },
+        "fr_11rac": { name: "第11殖民炮兵团", faction: "france", type: "artillery", unitCode: "11e RAC", region: "奠边府", initialManpower: 2000 },
+        "fr_41rac": { name: "第41殖民炮兵团", faction: "france", type: "artillery", unitCode: "41e RAC", region: "红河三角洲", initialManpower: 2000 },
+        "fr_bavn": { name: "越南国军", faction: "france", type: "infantry", unitCode: "BAVN", region: "南北三战区", initialManpower: 50000 },
+        "fr_arl": { name: "寮国王家军", faction: "france", type: "infantry", unitCode: "ARL", region: "寮国境内", initialManpower: 15000 },
+        "fr_arc": { name: "柬埔寨王家军", faction: "france", type: "infantry", unitCode: "ARC", region: "柬埔寨境内", initialManpower: 12000 }
+    };
+    
+    const ALL_UNIT_IDS = Object.keys(UNITS_BASE);
+    
+    // ========== 动态属性系统 ==========
+    // 存储每支部队的当前状态
+    let unitStats = {};
+    
+    // 根据天数计算兵力、补给、士气（基于史实）
+    function calculateUnitStats(unitId, day) {
+        const base = UNITS_BASE[unitId];
+        if (!base) return { manpower: 0, supply: 0, morale: 0 };
+        
+        let manpower = base.initialManpower;
+        let supply = 100;
+        let morale = 100;
+        const isFrench = base.faction === 'france';
+        const isVietminh = base.faction === 'vietminh';
+        
+        // 判断部队是否在奠边府战场
+        const isDienBienPhu = ["fr_1bep", "fr_6bpc", "fr_1bpc", "fr_2bpc", "fr_5bpvn", "fr_13dble", "fr_11rac", 
+                               "vm_308", "vm_312", "vm_316", "vm_304", "vm_351"].includes(unitId);
+        
+        // 判断是否是后方/预备部队
+        const isRear = ["fr_gm1", "fr_gm2", "fr_gm3", "fr_gm4", "fr_gm5", "fr_gm6", "fr_gm7", "fr_gm8", 
+                        "fr_2bep", "fr_3moroccan", "fr_5algerian", "fr_3ric", "fr_1rec", "fr_41rac",
+                        "vm_320", "vm_325", "vm_330", "vm_304b"].includes(unitId);
+        
+        if (isDienBienPhu) {
+            // 奠边府战场 - 随时间伤亡增加
+            if (day >= 0 && day <= 5) {
+                manpower = manpower * (1 - day * 0.02);  // 初期轻微伤亡
+                supply = isFrench ? 90 - day : 95;
+                morale = isFrench ? 95 - day : 98;
+            } else if (day > 5 && day <= 15) {
+                manpower = manpower * (0.9 - (day - 5) * 0.025);
+                supply = isFrench ? 85 - (day - 5) * 2 : 92 - (day - 5);
+                morale = isFrench ? 90 - (day - 5) * 2 : 95;
+            } else if (day > 15 && day <= 25) {
+                manpower = manpower * (0.7 - (day - 15) * 0.02);
+                supply = isFrench ? 65 - (day - 15) * 2 : 88;
+                morale = isFrench ? 75 - (day - 15) * 1.5 : 92;
+            } else if (day > 25 && day <= 40) {
+                manpower = manpower * (0.5 - (day - 25) * 0.015);
+                supply = isFrench ? 45 - (day - 25) * 1.5 : 85;
+                morale = isFrench ? 55 - (day - 25) * 1.2 : 88;
+            } else if (day > 40 && day <= 55) {
+                manpower = manpower * (0.3 - (day - 40) * 0.015);
+                supply = isFrench ? 25 - (day - 40) * 1 : 82;
+                morale = isFrench ? 35 - (day - 40) * 1.5 : 85;
+            }
+            
+            // 法军特殊事件：3月28日机场被封锁后补给骤降
+            if (isFrench && day >= 25) {
+                supply = Math.max(10, supply * 0.7);
+            }
+            // 越盟特殊事件：4月中旬后士气高涨
+            if (isVietminh && day >= 35) {
+                morale = Math.min(100, morale + 10);
+            }
+        } else if (isRear) {
+            // 后方部队 - 伤亡较小，但补给受整体战局影响
+            if (day > 30) {
+                manpower = manpower * (1 - (day - 30) * 0.01);
+            }
+            if (isFrench && day > 25) {
+                supply = 80 - (day - 25) * 1;
+            } else {
+                supply = 85;
+            }
+            morale = isFrench ? (day > 35 ? 70 - (day - 35) : 85) : 90;
+        } else {
+            // 其他部队
+            if (isFrench && day > 20) {
+                manpower = manpower * (1 - (day - 20) * 0.008);
+                supply = 75 - (day - 20);
+                morale = 70 - (day - 20);
+            } else {
+                supply = 90;
+                morale = 90;
+            }
+        }
+        
+        // 确保数值不为负
+        manpower = Math.max(0, Math.floor(manpower));
+        supply = Math.max(0, Math.min(100, Math.floor(supply)));
+        morale = Math.max(0, Math.min(100, Math.floor(morale)));
+        
+        return { manpower, supply, morale };
+    }
+    
+    // 更新所有部队的统计数据
+    function updateAllUnitStats(day) {
+        for (let unitId of ALL_UNIT_IDS) {
+            unitStats[unitId] = calculateUnitStats(unitId, day);
+        }
+    }
+    
+    // 更新全局统计面板
+    function updateGlobalStats() {
+        let vmTotal = 0, frTotal = 0, totalSupply = 0, totalMorale = 0;
+        let count = 0;
+        
+        for (let unitId of ALL_UNIT_IDS) {
+            const stats = unitStats[unitId];
+            if (stats) {
+                if (unitId.startsWith('vm')) vmTotal += stats.manpower;
+                else frTotal += stats.manpower;
+                totalSupply += stats.supply;
+                totalMorale += stats.morale;
+                count++;
+            }
+        }
+        
+        document.getElementById('vmTotalManpower').innerHTML = vmTotal.toLocaleString();
+        document.getElementById('frTotalManpower').innerHTML = frTotal.toLocaleString();
+        const avgSupply = count > 0 ? Math.floor(totalSupply / count) : 0;
+        const avgMorale = count > 0 ? Math.floor(totalMorale / count) : 0;
+        document.getElementById('avgSupply').innerHTML = avgSupply + '%';
+        document.getElementById('avgMorale').innerHTML = avgMorale + '%';
+        
+        // 根据数值改变颜色
+        const supplyEl = document.getElementById('avgSupply');
+        const moraleEl = document.getElementById('avgMorale');
+        supplyEl.className = 'stat-value ' + (avgSupply >= 60 ? 'stat-good' : (avgSupply >= 30 ? 'stat-warning' : 'stat-danger'));
+        moraleEl.className = 'stat-value ' + (avgMorale >= 60 ? 'stat-good' : (avgMorale >= 30 ? 'stat-warning' : 'stat-danger'));
+    }
+    
+    // ========== 部队轨迹数据 ==========
+    const unitTrajectories = {
+        "vm_308": [{ day: 0, lat: 21.430, lng: 102.990 }, { day: 8, lat: 21.410, lng: 103.000 }, { day: 20, lat: 21.395, lng: 103.008 }, { day: 40, lat: 21.385, lng: 103.012 }, { day: 55, lat: 21.380, lng: 103.010 }],
+        "vm_312": [{ day: 0, lat: 21.400, lng: 103.050 }, { day: 10, lat: 21.395, lng: 103.045 }, { day: 25, lat: 21.388, lng: 103.030 }, { day: 45, lat: 21.385, lng: 103.020 }, { day: 55, lat: 21.382, lng: 103.015 }],
+        "vm_316": [{ day: 0, lat: 21.440, lng: 103.015 }, { day: 15, lat: 21.420, lng: 103.010 }, { day: 35, lat: 21.405, lng: 103.005 }, { day: 55, lat: 21.395, lng: 103.008 }],
+        "vm_304": [{ day: 5, lat: 21.370, lng: 103.020 }, { day: 25, lat: 21.365, lng: 103.012 }, { day: 45, lat: 21.360, lng: 103.005 }, { day: 55, lat: 21.358, lng: 103.002 }],
+        "vm_351": [{ day: 0, lat: 21.410, lng: 103.042 }, { day: 20, lat: 21.405, lng: 103.038 }, { day: 40, lat: 21.400, lng: 103.035 }, { day: 55, lat: 21.398, lng: 103.032 }],
+        "vm_320": [{ day: 0, lat: 20.680, lng: 105.870 }, { day: 30, lat: 21.000, lng: 105.000 }, { day: 55, lat: 21.200, lng: 104.500 }],
+        "vm_325": [{ day: 0, lat: 19.500, lng: 105.500 }, { day: 40, lat: 20.200, lng: 104.800 }, { day: 55, lat: 20.800, lng: 104.200 }],
+        "vm_330": [{ day: 0, lat: 11.500, lng: 106.500 }, { day: 55, lat: 12.000, lng: 106.000 }],
+        "vm_304b": [{ day: 0, lat: 20.850, lng: 106.300 }, { day: 55, lat: 21.000, lng: 106.000 }],
+        "fr_1bep": [{ day: 0, lat: 21.387, lng: 103.016 }, { day: 20, lat: 21.387, lng: 103.016 }, { day: 40, lat: 21.385, lng: 103.014 }, { day: 55, lat: 21.383, lng: 103.012 }],
+        "fr_2bep": [{ day: 0, lat: 21.200, lng: 105.800 }, { day: 25, lat: 21.300, lng: 105.200 }, { day: 55, lat: 21.350, lng: 104.500 }],
+        "fr_6bpc": [{ day: 0, lat: 21.392, lng: 103.021 }, { day: 15, lat: 21.390, lng: 103.018 }, { day: 35, lat: 21.388, lng: 103.015 }, { day: 55, lat: 21.385, lng: 103.013 }],
+        "fr_1bpc": [{ day: 0, lat: 21.390, lng: 103.018 }, { day: 30, lat: 21.388, lng: 103.015 }, { day: 55, lat: 21.386, lng: 103.013 }],
+        "fr_2bpc": [{ day: 0, lat: 21.384, lng: 103.010 }, { day: 30, lat: 21.383, lng: 103.009 }, { day: 55, lat: 21.382, lng: 103.008 }],
+        "fr_5bpvn": [{ day: 0, lat: 21.386, lng: 103.015 }, { day: 55, lat: 21.384, lng: 103.013 }],
+        "fr_1bpl": [{ day: 0, lat: 18.500, lng: 102.500 }, { day: 55, lat: 18.800, lng: 102.700 }],
+        "fr_13dble": [{ day: 0, lat: 21.389, lng: 103.012 }, { day: 30, lat: 21.386, lng: 103.011 }, { day: 55, lat: 21.384, lng: 103.010 }],
+        "fr_gm1": [{ day: 0, lat: 21.200, lng: 106.000 }, { day: 30, lat: 21.300, lng: 105.200 }, { day: 55, lat: 21.350, lng: 104.500 }],
+        "fr_gm2": [{ day: 0, lat: 21.300, lng: 105.800 }, { day: 40, lat: 21.350, lng: 105.000 }, { day: 55, lat: 21.370, lng: 104.300 }],
+        "fr_gm3": [{ day: 0, lat: 21.400, lng: 105.600 }, { day: 45, lat: 21.420, lng: 104.800 }, { day: 55, lat: 21.400, lng: 104.200 }],
+        "fr_gm4": [{ day: 0, lat: 21.500, lng: 105.800 }, { day: 35, lat: 21.480, lng: 105.000 }, { day: 55, lat: 21.430, lng: 104.300 }],
+        "fr_gm5": [{ day: 0, lat: 21.200, lng: 105.500 }, { day: 40, lat: 21.250, lng: 104.800 }, { day: 55, lat: 21.300, lng: 104.200 }],
+        "fr_gm6": [{ day: 0, lat: 20.800, lng: 106.700 }, { day: 50, lat: 21.000, lng: 106.000 }, { day: 55, lat: 21.100, lng: 105.500 }],
+        "fr_gm7": [{ day: 0, lat: 21.800, lng: 105.000 }, { day: 45, lat: 21.700, lng: 104.300 }, { day: 55, lat: 21.600, lng: 103.800 }],
+        "fr_gm8": [{ day: 0, lat: 21.000, lng: 106.200 }, { day: 50, lat: 21.100, lng: 105.500 }, { day: 55, lat: 21.200, lng: 104.800 }],
+        "fr_gm100": [{ day: 0, lat: 14.000, lng: 107.800 }, { day: 30, lat: 15.500, lng: 106.800 }, { day: 55, lat: 17.000, lng: 105.500 }],
+        "fr_3moroccan": [{ day: 0, lat: 20.500, lng: 105.800 }, { day: 40, lat: 20.800, lng: 105.000 }, { day: 55, lat: 21.000, lng: 104.500 }],
+        "fr_5algerian": [{ day: 0, lat: 20.800, lng: 105.500 }, { day: 40, lat: 21.000, lng: 104.800 }, { day: 55, lat: 21.100, lng: 104.300 }],
+        "fr_3ric": [{ day: 0, lat: 21.150, lng: 106.000 }, { day: 55, lat: 21.250, lng: 105.500 }],
+        "fr_1rec": [{ day: 0, lat: 21.250, lng: 105.900 }, { day: 55, lat: 21.300, lng: 105.300 }],
+        "fr_11rac": [{ day: 0, lat: 21.388, lng: 103.014 }, { day: 55, lat: 21.386, lng: 103.012 }],
+        "fr_41rac": [{ day: 0, lat: 21.000, lng: 106.000 }, { day: 55, lat: 21.100, lng: 105.500 }],
+        "fr_bavn": [{ day: 0, lat: 16.000, lng: 108.000 }, { day: 30, lat: 16.500, lng: 107.500 }, { day: 55, lat: 17.000, lng: 107.000 }],
+        "fr_arl": [{ day: 0, lat: 18.000, lng: 102.500 }, { day: 55, lat: 18.500, lng: 102.800 }],
+        "fr_arc": [{ day: 0, lat: 11.500, lng: 105.000 }, { day: 55, lat: 12.000, lng: 104.800 }]
+    };
+    
+    // 时间轴事件
+    const timelineEvents = [
+        { day: 0, date: "1954年3月13日", event: "战役开始：越盟第308、312、316师向奠边府法军外围据点发起总攻" },
+        { day: 5, date: "1954年3月18日", event: "Beatrice高地失守，法军第1外籍伞兵营损失惨重" },
+        { day: 8, date: "1954年3月21日", event: "Gabrielle高地陷落，越盟第308师攻占西北关键据点" },
+        { day: 15, date: "1954年3月28日", event: "越盟炮兵完全封锁奠边府机场，法军补给开始恶化" },
+        { day: 25, date: "1954年4月7日", event: "法军空中补给线被完全切断，士气大幅下降" },
+        { day: 35, date: "1954年4月17日", event: "法军外围据点全部失守，收缩至中心阵地" },
+        { day: 48, date: "1954年4月30日", event: "越盟总攻准备完成，第351炮兵师持续轰炸法军核心阵地" },
+        { day: 55, date: "1954年5月7日", event: "奠边府陷落，法军约1.1万人投降" }
+    ];
+    
+    // 胡志明小道
+    const hoChiMinhTrail = [
+        { lat: 21.200, lng: 105.000 }, { lat: 20.800, lng: 104.800 }, { lat: 20.300, lng: 104.200 },
+        { lat: 19.800, lng: 103.800 }, { lat: 19.200, lng: 103.500 }, { lat: 18.500, lng: 103.200 },
+        { lat: 17.800, lng: 104.000 }, { lat: 17.000, lng: 105.000 }, { lat: 16.300, lng: 106.000 },
+        { lat: 15.800, lng: 106.500 }, { lat: 15.200, lng: 107.200 }, { lat: 14.500, lng: 107.800 },
+        { lat: 13.800, lng: 108.000 }, { lat: 13.000, lng: 108.200 }, { lat: 12.200, lng: 108.500 }, { lat: 11.500, lng: 106.800 }
+    ];
+    
+    const hoChiMinhTrailBranch = [
+        { lat: 17.800, lng: 104.000 }, { lat: 17.200, lng: 103.500 }, { lat: 16.500, lng: 103.200 }, { lat: 15.800, lng: 103.000 }
+    ];
+    
+    let unitMarkers = {};
+    let map;
+    let dragModeEnabled = false;
+    let currentDay = 0;
+    let isPlaying = false;
+    let playInterval = null;
+    let trajectoryLines = [];
+    let hoChiMinhLines = [];
+    
+    function getPositionAtDay(unitId, day) {
+        const traj = unitTrajectories[unitId];
+        if (!traj) return null;
+        if (day <= traj[0].day) return { lat: traj[0].lat, lng: traj[0].lng };
+        if (day >= traj[traj.length-1].day) return { lat: traj[traj.length-1].lat, lng: traj[traj.length-1].lng };
+        for (let i = 0; i < traj.length - 1; i++) {
+            if (day >= traj[i].day && day <= traj[i+1].day) {
+                const t = (day - traj[i].day) / (traj[i+1].day - traj[i].day);
+                return {
+                    lat: traj[i].lat + (traj[i+1].lat - traj[i].lat) * t,
+                    lng: traj[i].lng + (traj[i+1].lng - traj[i].lng) * t
+                };
+            }
+        }
+        return null;
+    }
+    
+    function getMoraleClass(morale) {
+        if (morale >= 70) return 'stat-good';
+        if (morale >= 40) return 'stat-warning';
+        return 'stat-danger';
+    }
+    
+    function getSupplyClass(supply) {
+        if (supply >= 70) return 'stat-good';
+        if (supply >= 40) return 'stat-warning';
+        return 'stat-danger';
+    }
+    
+    function createUnitMarker(unitId, unitBase, lat, lng, stats) {
+        const isFrench = unitBase.faction === 'france';
+        const bgColor = isFrench ? '#b33c2e' : '#2a6f8f';
+        const borderColor = isFrench ? '#e0b05e' : '#ffd966';
+        let typeSymbol = unitBase.type === 'artillery' ? '💥' : (unitBase.type === 'airborne' ? '🪂' : (unitBase.type === 'mechanized' ? '⛨' : '⚔️'));
+        
+        // 根据士气和补给调整兵牌边框
+        const moraleClass = getMoraleClass(stats.morale);
+        const supplyClass = getSupplyClass(stats.supply);
+        
+        const html = `
+            <div style="
+                background: ${bgColor};
+                border: 2px solid ${borderColor};
+                border-radius: 6px;
+                min-width: 70px;
+                padding: 4px 8px;
+                text-align: center;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                font-weight: bold;
+                font-size: 10px;
+                color: #fff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                cursor: ${dragModeEnabled ? 'grab' : 'pointer'};
+            ">
+                <div style="font-size: 13px;">${typeSymbol}</div>
+                <div style="font-size: 9px; white-space: nowrap;">${unitBase.unitCode}</div>
+            </div>
+        `;
+        const icon = L.divIcon({ html: html, iconSize: [70, 42], popupAnchor: [0, -20] });
+        const marker = L.marker([lat, lng], { icon: icon, draggable: dragModeEnabled });
+        
+        // 详细弹窗内容
+        marker.bindPopup(`
+            <div style="min-width: 180px;">
+                <strong style="color:${isFrench ? '#b33c2e' : '#2a6f8f'};">${unitBase.name}</strong><br>
+                <span>📍 ${unitBase.region}</span><br>
+                <hr style="margin: 5px 0;">
+                <div>👥 兵力: <strong style="color:${stats.manpower < unitBase.initialManpower * 0.5 ? '#c0392b' : '#27ae60'}">${stats.manpower.toLocaleString()}</strong> / ${unitBase.initialManpower.toLocaleString()}</div>
+                <div>📦 补给: <strong class="${supplyClass}">${stats.supply}%</strong></div>
+                <div>💪 士气: <strong class="${moraleClass}">${stats.morale}%</strong></div>
+                <hr style="margin: 5px 0;">
+                <div style="font-size: 0.7rem; color: #666;">${isFrench ? '法兰西远征军' : '越南人民军'} · ${unitBase.type.toUpperCase()}</div>
+            </div>
+        `);
+        marker.unitId = unitId;
+        return marker;
+    }
+    
+    function drawHoChiMinhTrail() {
+        const mainLine = L.polyline(hoChiMinhTrail, {
+            color: '#2ecc71', weight: 3, opacity: 0.8, dashArray: '8, 6'
+        }).addTo(map);
+        mainLine.bindPopup('<strong>胡志明小道</strong><br>北越通往南越的战略补给线');
+        hoChiMinhLines.push(mainLine);
+        
+        const branchLine = L.polyline(hoChiMinhTrailBranch, {
+            color: '#2ecc71', weight: 2.5, opacity: 0.65, dashArray: '6, 8'
+        }).addTo(map);
+        branchLine.bindPopup('<strong>胡志明小道支线</strong>');
+        hoChiMinhLines.push(branchLine);
+        
+        const startMarker = L.marker(hoChiMinhTrail[0], {
+            icon: L.divIcon({ html: '<div style="background:#2ecc71; color:#fff; width:24px; height:24px; border-radius:50%; text-align:center; line-height:24px; font-size:12px; border:2px solid #fff;">🇻🇳</div>', iconSize: [24, 24] })
+        }).addTo(map);
+        startMarker.bindPopup('<strong>胡志明小道起点</strong>');
+        hoChiMinhLines.push(startMarker);
+        
+        const endMarker = L.marker(hoChiMinhTrail[hoChiMinhTrail.length - 1], {
+            icon: L.divIcon({ html: '<div style="background:#c0392b; color:#fff; width:24px; height:24px; border-radius:50%; text-align:center; line-height:24px; font-size:12px; border:2px solid #fff;">🎯</div>', iconSize: [24, 24] })
+        }).addTo(map);
+        endMarker.bindPopup('<strong>胡志明小道终点</strong><br>西贡外围地区');
+        hoChiMinhLines.push(endMarker);
+    }
+    
+    function updateTimeline(day) {
+        currentDay = Math.min(55, Math.max(0, day));
+        document.getElementById('timelineSlider').value = (currentDay / 55) * 100;
+        
+        let eventInfo = timelineEvents[0];
+        for (let i = timelineEvents.length-1; i >= 0; i--) {
+            if (timelineEvents[i].day <= currentDay) {
+                eventInfo = timelineEvents[i];
+                break;
+            }
+        }
+        document.getElementById('timelineDate').innerHTML = eventInfo.date;
+        document.getElementById('timelineEvent').innerHTML = eventInfo.event;
+        
+        // 更新所有部队的统计数据
+        updateAllUnitStats(currentDay);
+        
+        // 更新兵牌位置和弹窗内容
+        for (let [unitId, marker] of Object.entries(unitMarkers)) {
+            const pos = getPositionAtDay(unitId, currentDay);
+            if (pos) {
+                marker.setLatLng([pos.lat, pos.lng]);
+            }
+            // 更新弹窗内容（重新绑定）
+            const stats = unitStats[unitId];
+            const base = UNITS_BASE[unitId];
+            if (stats && base) {
+                const isFrench = base.faction === 'france';
+                const moraleClass = getMoraleClass(stats.morale);
+                const supplyClass = getSupplyClass(stats.supply);
+                marker.bindPopup(`
+                    <div style="min-width: 180px;">
+                        <strong style="color:${isFrench ? '#b33c2e' : '#2a6f8f'};">${base.name}</strong><br>
+                        <span>📍 ${base.region}</span><br>
+                        <hr style="margin: 5px 0;">
+                        <div>👥 兵力: <strong style="color:${stats.manpower < base.initialManpower * 0.5 ? '#c0392b' : '#27ae60'}">${stats.manpower.toLocaleString()}</strong> / ${base.initialManpower.toLocaleString()}</div>
+                        <div>📦 补给: <strong class="${supplyClass}">${stats.supply}%</strong></div>
+                        <div>💪 士气: <strong class="${moraleClass}">${stats.morale}%</strong></div>
+                        <hr style="margin: 5px 0;">
+                        <div style="font-size: 0.7rem; color: #666;">${isFrench ? '法兰西远征军' : '越南人民军'} · ${base.type.toUpperCase()}</div>
+                    </div>
+                `);
+            }
+        }
+        
+        updateGlobalStats();
+    }
+    
+    function drawTrajectoryLines() {
+        trajectoryLines.forEach(line => map.removeLayer(line));
+        trajectoryLines = [];
+        for (let [unitId, traj] of Object.entries(unitTrajectories)) {
+            if (traj.length < 2) continue;
+            const latlngs = traj.map(p => [p.lat, p.lng]);
+            const line = L.polyline(latlngs, {
+                color: unitId.startsWith('vm') ? '#2a6f8f' : '#b33c2e',
+                weight: 2, opacity: 0.5, dashArray: '5,8'
+            }).addTo(map);
+            trajectoryLines.push(line);
+        }
+    }
+    
+    function initMap() {
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri', maxZoom: 18
+        });
+        const contourOverlay = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            subdomains: 'abc', opacity: 0.6, maxZoom: 17
+        });
+        map = L.map('map').setView([16.5, 105.5], 6.5);
+        satelliteLayer.addTo(map);
+        contourOverlay.addTo(map);
+        L.control.layers({ "🛰️ 卫星影像": satelliteLayer }, { "🗺️ 等高线叠加": contourOverlay }).addTo(map);
+        L.control.scale({ imperial: false }).addTo(map);
+        
+        // 初始化所有部队的统计数据
+        updateAllUnitStats(0);
+        
+        for (let unitId of ALL_UNIT_IDS) {
+            const base = UNITS_BASE[unitId];
+            const startPos = unitTrajectories[unitId]?.[0];
+            const stats = unitStats[unitId];
+            if (startPos && base && stats) {
+                const marker = createUnitMarker(unitId, base, startPos.lat, startPos.lng, stats);
+                marker.addTo(map);
+                unitMarkers[unitId] = marker;
+            }
+        }
+        drawTrajectoryLines();
+        drawHoChiMinhTrail();
+        updateTimeline(0);
+        updateGlobalStats();
+        
+        const legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function() {
+            const div = L.DomUtil.create('div', 'map-legend');
+            div.innerHTML = `<div class="legend-title">📋 图例 (共35支部队)</div>
+                <div><span style="color:#ffaaa5;">🔴 红色</span> 法军 (26支) &nbsp;|&nbsp; <span style="color:#7dc1ff;">🔵 蓝色</span> 越盟 (9支)</div>
+                <div><span style="border-bottom:2px dashed #ffd966;">-----</span> 部队运动轨迹</div>
+                <div><span style="color:#2ecc71;">🟢 绿色虚线</span> 胡志明小道</div>
+                <div>⚔️步兵 &nbsp;🪂伞兵 &nbsp;💥炮兵 &nbsp;⛨机械化</div>
+                <div>📊 点击兵牌查看兵力/补给/士气</div>
+                <div style="margin-top:8px; font-size:0.65rem;">💚 高 💛 中 ❤️ 低</div>`;
+            return div;
+        };
+        legend.addTo(map);
+    }
+    
+    function startPlay() {
+        if (playInterval) clearInterval(playInterval);
+        isPlaying = true;
+        document.getElementById('playPauseBtn').innerHTML = '⏸ 暂停';
+        playInterval = setInterval(() => {
+            if (currentDay >= 55) stopPlay();
+            else updateTimeline(currentDay + 1);
+        }, 800);
+    }
+    function stopPlay() {
+        if (playInterval) clearInterval(playInterval);
+        isPlaying = false;
+        document.getElementById('playPauseBtn').innerHTML = '▶ 播放';
+        playInterval = null;
+    }
+    function togglePlay() { if (isPlaying) stopPlay(); else startPlay(); }
+    function resetTimeline() { stopPlay(); updateTimeline(0); }
+    function setDragMode(enable) {
+        dragModeEnabled = enable;
+        for (let marker of Object.values(unitMarkers)) {
+            if (enable) marker.dragging.enable();
+            else marker.dragging.disable();
+        }
+        const btn = document.getElementById('toggleDragBtn');
+        if (enable) { btn.classList.add('active'); btn.textContent = '✋ 编辑中'; }
+        else { btn.classList.remove('active'); btn.textContent = '✋ 编辑模式'; }
+        document.getElementById('dragStatus').innerHTML = enable ? '✅ 编辑模式已开启' : '⚙️ 未开启编辑';
+    }
+    function resetUnitPositions() { updateTimeline(currentDay); }
+    
+    // 文件接口
+    async function loadFiles() {
+        const res = await fetch(`/api/files/${committee}`);
+        if (!res.ok) return;
+        const files = await res.json();
+        document.getElementById('academicFiles').innerHTML = files.filter(f=>f.type==='academic').map(f=>`<li><span>📄 ${f.originalName}</span> <a href="/api/download/${f.id}" download>下载</a></li>`).join('') || '<li>暂无文件</li>';
+        document.getElementById('myPositions').innerHTML = files.filter(f=>f.type==='position' && f.uploadedBy===currentUser?.id).map(f=>`<li><span>📝 ${f.originalName}</span> <a href="/api/download/${f.id}" download>下载</a></li>`).join('') || '<li>暂无立场文件</li>';
+        if (currentUser?.isAdmin) document.getElementById('allFiles').innerHTML = files.map(f=>`<li><span>${f.originalName} (${f.visible?'可见':'隐藏'})</span> <button onclick="toggleFileVis('${f.id}')">切换</button></li>`).join('');
+    }
+    async function loadQuizzes() {
+        const res = await fetch(`/api/quiz/${committee}`);
+        if (!res.ok) return;
+        const quizzes = await res.json();
+        document.getElementById('quizList').innerHTML = quizzes.map(q=>`<li><span>📘 ${q.originalName}</span> <a href="/api/download/quiz/${q.id}" download>下载</a></li>`).join('') || '<li>暂无测验</li>';
+        if (currentUser?.isAdmin) document.getElementById('allQuizzes').innerHTML = quizzes.map(q=>`<li><span>${q.originalName}</span> <button class="btn-del" onclick="deleteQuizItem('${q.id}')">删除</button></li>`).join('');
+    }
+    async function loadNews() {
+        const res = await fetch(`/api/news/${committee}`);
+        if (!res.ok) return;
+        const news = await res.json();
+        document.getElementById('newsList').innerHTML = news.map(n=>`<li><span>📰 ${n.title}</span> <a href="/api/download/news/${n.id}" download>下载</a></li>`).join('') || '<li>暂无新闻</li>';
+        if (currentUser?.isAdmin) document.getElementById('allNews').innerHTML = news.map(n=>`<li><span>${n.title}</span> <button class="btn-del" onclick="deleteNewsItem('${n.id}')">删除</button></li>`).join('');
+    }
+    window.toggleFileVis = async (id) => { await fetch(`/api/files/${id}/visibility`, { method: 'PUT' }); loadFiles(); };
+    window.deleteQuizItem = async (id) => { if(confirm('删除?')){ await fetch(`/api/quiz/${id}`, { method: 'DELETE' }); loadQuizzes(); } };
+    window.deleteNewsItem = async (id) => { if(confirm('删除?')){ await fetch(`/api/news/${id}`, { method: 'DELETE' }); loadNews(); } };
+    
+    document.getElementById('positionForm')?.addEventListener('submit', async(e) => {
+        e.preventDefault(); const fd = new FormData(); fd.append('file', document.getElementById('positionFile').files[0]); fd.append('committee', committee);
+        await fetch('/api/upload/position', { method: 'POST', body: fd });
+        document.getElementById('positionFile').value=''; loadFiles();
+    });
+    document.getElementById('quizForm')?.addEventListener('submit', async(e) => {
+        e.preventDefault(); const fd = new FormData(); fd.append('file', document.getElementById('quizFile').files[0]); fd.append('committee', committee);
+        await fetch('/api/upload/quiz', { method: 'POST', body: fd });
+        document.getElementById('quizFile').value=''; loadQuizzes();
+    });
+    document.getElementById('newsForm')?.addEventListener('submit', async(e) => {
+        e.preventDefault(); const fd = new FormData(); fd.append('file', document.getElementById('newsFile').files[0]); fd.append('committee', committee);
+        fd.append('title', document.getElementById('newsTitle').value || '新闻');
+        await fetch('/api/upload/news', { method: 'POST', body: fd });
+        document.getElementById('newsFile').value=''; document.getElementById('newsTitle').value=''; loadNews();
+    });
+    document.getElementById('adminForm')?.addEventListener('submit', async(e) => {
+        e.preventDefault(); const fd = new FormData(); fd.append('file', document.getElementById('adminFile').files[0]); fd.append('committee', committee);
+        fd.append('visible', document.getElementById('visibleCheck').checked);
+        await fetch('/api/upload/admin', { method: 'POST', body: fd });
+        document.getElementById('adminFile').value=''; loadFiles();
+    });
+    
+    async function initPage() {
+        const res = await fetch('/api/me');
+        if (!res.ok) { alert('请先登录'); window.location.href = '/login.html'; return; }
+        currentUser = await res.json();
+        if (!currentUser.isAdmin && !currentUser.genevaAccess) {
+            alert('您尚未获得日内瓦会场访问权限');
+            window.location.href = '/';
+            return;
+        }
+        document.getElementById('positionSection').style.display = 'block';
+        document.getElementById('quizSection').style.display = 'block';
+        document.getElementById('newsSection').style.display = 'block';
+        if (currentUser.isAdmin || currentUser.genevaNewsAccess) document.getElementById('newsForm').style.display = 'flex';
+        if (currentUser.isAdmin) document.getElementById('adminSection').classList.remove('hidden');
+        
+        initMap();
+        await loadFiles(); await loadQuizzes(); await loadNews();
+        
+        document.getElementById('timelineSlider').addEventListener('input', (e) => { stopPlay(); updateTimeline(Math.floor((e.target.value / 100) * 55)); });
+        document.getElementById('playPauseBtn').addEventListener('click', togglePlay);
+        document.getElementById('rewindBtn').addEventListener('click', () => { stopPlay(); updateTimeline(0); });
+        document.getElementById('resetTimelineBtn').addEventListener('click', resetTimeline);
+        document.getElementById('resetMapBtn').addEventListener('click', resetUnitPositions);
+        document.getElementById('toggleDragBtn').addEventListener('click', () => setDragMode(!dragModeEnabled));
+        
+        if (!(currentUser.isAdmin || currentUser.genevaAccess)) {
+            document.getElementById('toggleDragBtn').disabled = true;
+            document.getElementById('toggleDragBtn').style.opacity = '0.5';
+        }
+    }
+    initPage();
+</script>
+</body>
+</html>

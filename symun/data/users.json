@@ -1,0 +1,23 @@
+[
+  {
+    "id": "68990a25-a893-418f-bcb9-0f4a0778ea0c",
+    "username": "Bruce",
+    "password": "$2a$10$5.sli.SBPXx4FX6qiN3oZOUtDMfCGatRxn9RCuzbGDdh7XGRstt1m",
+    "isAdmin": true,
+    "genevaAccess": true,
+    "genevaNewsAccess": true,
+    "almatyNewsAccess": true
+  },
+  {
+    "id": "3b466502-b051-460d-a07a-4df707574613",
+    "username": "u2182135@163.com",
+    "email": "u2182135@163.com",
+    "password": "$2a$10$Ynxr7UwmrZSw6RYFsuHmWOSYYQ4.377yPK0iR9W16tfGE43UNqIBi",
+    "isAdmin": false,
+    "genevaAccess": true,
+    "genevaNewsAccess": true,
+    "almatyNewsAccess": false,
+    "delegateId": "其它议员1",
+    "delegateName": "其它议员1 (其它) - 7票"
+  }
+]

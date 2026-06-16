@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 苏韵模联</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f5f0e8;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: #8B1A2B;
+            border-left: 5px solid #C9A96E;
+            padding-left: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #8B1A2B;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 1400px;
+        }
+        th, td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 0.8rem;
+        }
+        th {
+            background: #8B1A2B;
+            color: #fff;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+        .badge-admin { background: #C9A96E; color: #fff; }
+        .badge-user { background: #e8e8e8; color: #666; }
+        .badge-yes { background: #27ae60; color: #fff; }
+        .badge-no { background: #f0f0f0; color: #999; }
+        .badge-delegate { background: #2980b9; color: #fff; }
+        button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        .btn-admin { background: #C9A96E; color: #fff; }
+        .btn-grant { background: #27ae60; color: #fff; }
+        .btn-revoke { background: #e67e22; color: #fff; }
+        .btn-delete { background: #c0392b; color: #fff; }
+        .btn-gray { background: #7f8c8d; color: #fff; }
+        .btn-delegate { background: #2980b9; color: #fff; }
+        .btn-remove-delegate { background: #e74c3c; color: #fff; }
+        .btn-news { background: #8e44ad; color: #fff; }
+        .btn-news-revoke { background: #6c3483; color: #fff; }
+        button:hover { opacity: 0.85; }
+        .msg {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .msg-success { background: #d4edda; color: #155724; }
+        .msg-error { background: #f8d7da; color: #721c24; }
+        .delegate-select {
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 0.7rem;
+        }
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fef5e8;
+            border-radius: 8px;
+            border-left: 4px solid #C9A96E;
+        }
+        .info-box strong { color: #8B1A2B; }
+        .info-box ul { margin-top: 8px; margin-left: 20px; }
+        .info-box li { margin: 4px 0; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8B1A2B;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← 返回首页</a>
+        <h1>👥 用户管理</h1>
+        <p style="color:#888;">管理用户权限、日内瓦会场及议员身份分配（最多11名正式议员 + 2名其它党派代表）</p>
+
+        <div class="msg" id="msg"></div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>管理员</th>
+                        <th>日内瓦会场</th>
+                        <th>日内瓦新闻</th>
+                        <th>历史委新闻</th>
+                        <th>议员身份</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable">
+                    <tr><td colspan="8" class="loading">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="info-box">
+            <strong>📌 议员列表（共13席，总权重625）：</strong>
+            <ul style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                <li style="width: 200px;">1. 雅克·杜克洛 (PCF) - 51票</li>
+                <li style="width: 200px;">2. 莫里斯·托雷斯 (PCF) - 51票</li>
+                <li style="width: 200px;">3. 居伊·摩勒 (SFIO) - 53票</li>
+                <li style="width: 200px;">4. 保罗·拉马迪埃 (SFIO) - 53票</li>
+                <li style="width: 200px;">5. 乔治·比多 (MRP) - 44票</li>
+                <li style="width: 200px;">6. 罗伯特·舒曼 (MRP) - 44票</li>
+                <li style="width: 200px;">7. 皮埃尔·孟戴斯-弗朗斯 (RGR) - 50票</li>
+                <li style="width: 200px;">8. 埃德加·富尔 (RGR) - 50票</li>
+                <li style="width: 200px;">9. 安托万·皮奈 (CNIP) - 47票</li>
+                <li style="width: 200px;">10. 约瑟夫·拉尼埃尔 (CNIP) - 47票</li>
+                <li style="width: 200px;">11. 雅克·苏斯戴尔 (RPF) - 121票</li>
+                <li style="width: 200px;">12. 其它议员1 (其它) - 7票</li>
+                <li style="width: 200px;">13. 其它议员2 (其它) - 7票</li>
+            </ul>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">💡 每位议员只能分配给一个用户，分配后该用户即可在议会中投票。</p>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        const delegateList = [
+            { id: "雅克·杜克洛", name: "雅克·杜克洛 (PCF) - 51票" },
+            { id: "莫里斯·托雷斯", name: "莫里斯·托雷斯 (PCF) - 51票" },
+            { id: "居伊·摩勒", name: "居伊·摩勒 (SFIO) - 53票" },
+            { id: "保罗·拉马迪埃", name: "保罗·拉马迪埃 (SFIO) - 53票" },
+            { id: "乔治·比多", name: "乔治·比多 (MRP) - 44票" },
+            { id: "罗伯特·舒曼", name: "罗伯特·舒曼 (MRP) - 44票" },
+            { id: "皮埃尔·孟戴斯-弗朗斯", name: "皮埃尔·孟戴斯-弗朗斯 (RGR) - 50票" },
+            { id: "埃德加·富尔", name: "埃德加·富尔 (RGR) - 50票" },
+            { id: "安托万·皮奈", name: "安托万·皮奈 (CNIP) - 47票" },
+            { id: "约瑟夫·拉尼埃尔", name: "约瑟夫·拉尼埃尔 (CNIP) - 47票" },
+            { id: "雅克·苏斯戴尔", name: "雅克·苏斯戴尔 (RPF) - 121票" },
+            { id: "其它议员1", name: "其它议员1 (其它) - 7票" },
+            { id: "其它议员2", name: "其它议员2 (其它) - 7票" }
+        ];
+
+        async function init() {
+            try {
+                const meRes = await fetch('/api/me');
+                if (!meRes.ok) { 
+                    alert('请先登录'); 
+                    window.location.href = '/login.html'; 
+                    return; 
+                }
+                currentUser = await meRes.json();
+                if (!currentUser.isAdmin) { 
+                    alert('需要管理员权限'); 
+                    window.location.href = '/'; 
+                    return; 
+                }
+                await loadUsers();
+            } catch(e) { 
+                console.error('初始化失败:', e);
+                document.getElementById('userTable').innerHTML = '<tr><td colspan="8" style="text-align:center;color:red;">加载失败，请刷新重试</td></tr>';
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users-with-delegate');
+                if (!res.ok) throw new Error('获取用户列表失败');
+                const users = await res.json();
+                const tbody = document.getElementById('userTable');
+                if (!users || users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无用户</td></tr>';
+                    return;
+                }
+                
+                const assignedDelegateIds = users.filter(u => u.delegateId).map(u => u.delegateId);
+                
+                tbody.innerHTML = users.map(u => {
+                    const isCurrentUser = u.id === currentUser.id;
+                    const isAssigned = !!u.delegateId;
+                    const availableDelegates = delegateList.filter(d => !assignedDelegateIds.includes(d.id) || d.id === u.delegateId);
+                    
+                    return `
+                        <tr>
+                            <td><strong>${escapeHtml(u.username)}</strong></td>
+                            <td style="font-size:0.75rem;color:#555;">${escapeHtml(u.email)}</td>
+                            <td><span class="badge ${u.isAdmin ? 'badge-admin' : 'badge-user'}">${u.isAdmin ? '是' : '否'}</span></td>
+                            <td><span class="badge ${u.genevaAccess ? 'badge-yes' : 'badge-no'}">${u.genevaAccess ? '已授权' : '未授权'}</span></td>
+                            <td><span class="badge ${u.genevaNewsAccess ? 'badge-yes' : 'badge-no'}">${u.genevaNewsAccess ? '已授权' : '未授权'}</span></td>
+                            <td><span class="badge ${u.almatyNewsAccess ? 'badge-yes' : 'badge-no'}">${u.almatyNewsAccess ? '已授权' : '未授权'}</span></td>
+                            <td>
+                                ${isAssigned ? 
+                                    `<span class="badge badge-delegate">${escapeHtml(u.delegateName)}</span>` : 
+                                    '<span class="badge badge-no">未分配</span>'
+                                }
+                            </td>
+                            <td>
+                                ${!isCurrentUser ? `
+                                    <div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;">
+                                        ${u.isAdmin ? 
+                                            `<button class="btn-gray" onclick="toggleAdmin('${u.id}')">取消管理员</button>` :
+                                            `<button class="btn-admin" onclick="toggleAdmin('${u.id}')">设为管理员</button>`
+                                        }
+                                        ${u.genevaAccess ? 
+                                            `<button class="btn-revoke" onclick="toggleGeneva('${u.id}')">取消日内瓦</button>` :
+                                            `<button class="btn-grant" onclick="toggleGeneva('${u.id}')">授权日内瓦</button>`
+                                        }
+                                        ${u.genevaNewsAccess ? 
+                                            `<button class="btn-news-revoke" onclick="toggleGenevaNews('${u.id}')">取消日内瓦新闻</button>` :
+                                            `<button class="btn-news" onclick="toggleGenevaNews('${u.id}')">授权日内瓦新闻</button>`
+                                        }
+                                        ${u.almatyNewsAccess ? 
+                                            `<button class="btn-news-revoke" onclick="toggleAlmatyNews('${u.id}')">取消历史委新闻</button>` :
+                                            `<button class="btn-news" onclick="toggleAlmatyNews('${u.id}')">授权历史委新闻</button>`
+                                        }
+                                        <select id="delegateSelect_${u.id}" class="delegate-select" style="margin:2px;">
+                                            <option value="">-- 分配议员 --</option>
+                                            ${availableDelegates.map(d => `<option value="${escapeHtml(d.id)}" ${u.delegateId === d.id ? 'selected' : ''}>${escapeHtml(d.name)}</option>`).join('')}
+                                        </select>
+                                        ${isAssigned ? 
+                                            `<button class="btn-remove-delegate" onclick="removeDelegate('${u.id}')">移除议员</button>` :
+                                            `<button class="btn-delegate" onclick="setDelegate('${u.id}', document.getElementById('delegateSelect_${u.id}').value)">分配议员</button>`
+                                        }
+                                        <button class="btn-delete" onclick="deleteUser('${u.id}', '${escapeHtml(u.username)}')">删除</button>
+                                    </div>
+                                ` : '<span style="color:#999;font-size:0.75rem;">当前用户</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error('加载用户列表失败:', e);
+                document.getElementById('userTable').innerHTML = '<tr><td colspan="8" style="text-align:center;color:red;">加载失败，请刷新重试</td></tr>';
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        async function toggleAdmin(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/toggle-admin`, { method: 'PUT' });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        async function toggleGeneva(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/toggle-geneva`, { method: 'PUT' });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        async function toggleGenevaNews(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/toggle-geneva-news`, { method: 'PUT' });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        async function toggleAlmatyNews(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/toggle-almaty-news`, { method: 'PUT' });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        async function setDelegate(userId, delegateId) {
+            if (!delegateId) {
+                alert('请选择一个议员');
+                return;
+            }
+            const delegate = delegateList.find(d => d.id === delegateId);
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/set-delegate`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delegateId: delegateId, delegateName: delegate.name })
+                });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        async function removeDelegate(userId) {
+            if (!confirm('确定移除该用户的议员身份吗？')) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/set-delegate`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delegateId: null, delegateName: null })
+                });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        async function deleteUser(userId, username) {
+            if (!confirm(`确定要删除用户「${username}」吗？\n该用户上传的文件也会被删除。`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+                const data = await res.json();
+                showMsg(res.ok ? 'success' : 'error', data.message || data.error);
+                if (res.ok) loadUsers();
+            } catch(e) { showMsg('error', '操作失败'); }
+        }
+
+        function showMsg(type, text) {
+            const msg = document.getElementById('msg');
+            msg.className = `msg msg-${type}`;
+            msg.textContent = text;
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

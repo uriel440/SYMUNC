@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史委员会 - 苏韵模联</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f0e8; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { color: #8B1A2B; border-left: 5px solid #C9A96E; padding-left: 15px; }
+        .section { margin: 30px 0; }
+        .section h2 { color: #8B1A2B; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .file-list { list-style: none; padding: 0; }
+        .file-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; flex-wrap: wrap; gap: 10px; }
+        .file-list a { color: #8B1A2B; text-decoration: none; }
+        button { padding: 8px 20px; background: #8B1A2B; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+        button:hover { background: #6f1522; }
+        .upload-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .hidden { display: none; }
+        .tag { display: inline-block; background: #f0e8d8; color: #8B1A2B; padding: 3px 12px; border-radius: 20px; font-size: 0.8rem; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #8B1A2B; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+        .btn-del { background: #c0392b; }
+        .btn-del:hover { background: #a93226; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .modal-box { background: #fff; padding: 40px; border-radius: 8px; text-align: center; width: 360px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+        .modal-box h2 { color: #8B1A2B; margin-bottom: 10px; }
+        .modal-box p { color: #888; margin-bottom: 20px; font-size: 0.9rem; }
+        .modal-box input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1.1rem; text-align: center; margin-bottom: 15px; box-sizing: border-box; }
+        .modal-box .error { color: #c0392b; margin-bottom: 10px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <!-- 密码验证弹窗 -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box">
+            <h2>🔒 历史委员会</h2>
+            <p>请输入委员会密码进入</p>
+            <input type="password" id="committeePassword" placeholder="请输入密码">
+            <div class="error" id="pwdError"></div>
+            <button onclick="verifyPassword()">验证进入</button>
+        </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div id="mainContent" style="display:none;">
+        <div class="container">
+            <a href="/" class="back-link">← 返回首页</a>
+            <h1>📜 历史委员会</h1>
+            <p><span class="tag">历史推演</span></p>
+            <p><strong>1991 阿拉木图宣言</strong></p>
+            <p style="color: #666; line-height: 1.8;">重回苏联解体前夕的历史转折点。代表们将亲历独联体成立的关键时刻，在历史洪流中做出抉择，书写另一种可能。</p>
+
+            <div class="section">
+                <h2>📂 学术文件</h2>
+                <ul class="file-list" id="academicFiles"><li>加载中…</li></ul>
+            </div>
+
+            <div class="section" id="positionSection" style="display:none;">
+                <h2>📤 上传立场文件</h2>
+                <p style="color:#888;">仅您本人和组委会可见</p>
+                <form id="positionForm" class="upload-form">
+                    <input type="file" id="positionFile" required><button type="submit">上传</button>
+                </form>
+                <div id="uploadMsg"></div>
+                <h3>我的立场文件</h3>
+                <ul class="file-list" id="myPositions"><li>暂无文件</li></ul>
+            </div>
+
+            <div class="section" id="quizSection" style="display:none;">
+                <h2>📝 学术测验</h2>
+                <p style="color:#888;">所有登录代表均可上传</p>
+                <form id="quizForm" class="upload-form">
+                    <input type="file" id="quizFile" required><button type="submit">上传</button>
+                </form>
+                <div id="quizMsg"></div>
+                <h3>测验列表</h3>
+                <ul class="file-list" id="quizList"><li>暂无学术测验</li></ul>
+            </div>
+
+            <div class="section" id="newsSection" style="display:none;">
+                <h2>📰 会场新闻</h2>
+                <p style="color:#888;">仅管理员授权用户可上传</p>
+                <form id="newsForm" class="upload-form" style="display:none;">
+                    <input type="text" id="newsTitle" placeholder="新闻标题（可选）" style="padding:8px;border:1px solid #ddd;border-radius:4px;width:200px;">
+                    <input type="file" id="newsFile" required><button type="submit">上传</button>
+                </form>
+                <div id="newsMsg"></div>
+                <h3>新闻列表</h3>
+                <ul class="file-list" id="newsList"><li>暂无新闻</li></ul>
+            </div>
+
+            <div class="section admin-only hidden" id="adminSection">
+                <h2>🔧 管理员通道</h2>
+                <h3>上传学术文件</h3>
+                <form id="adminForm" class="upload-form">
+                    <input type="file" id="adminFile" required>
+                    <label><input type="checkbox" id="visibleCheck"> 立即可见</label>
+                    <button type="submit">上传</button>
+                </form>
+                <div id="adminMsg"></div>
+                <h3>管理所有文件</h3>
+                <ul class="file-list" id="allFiles"><li>暂无文件</li></ul>
+                <h3>管理学术测验</h3>
+                <ul class="file-list" id="allQuizzes"><li>暂无学术测验</li></ul>
+                <h3>管理新闻</h3>
+                <ul class="file-list" id="allNews"><li>暂无新闻</li></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const committee = 'almaty';
+        let currentUser = null;
+
+        async function init() {
+            const res = await fetch('/api/me');
+            if (!res.ok) { alert('请先登录'); window.location.href = '/login.html'; return; }
+            currentUser = await res.json();
+
+            if (currentUser.isAdmin) {
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initPage();
+                return;
+            }
+
+            const checkRes = await fetch(`/api/check-committee-access/${committee}`);
+            const checkData = await checkRes.json();
+            if (checkData.granted) {
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initPage();
+            }
+        }
+
+        async function verifyPassword() {
+            const password = document.getElementById('committeePassword').value;
+            const res = await fetch('/api/verify-committee-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ committee, password })
+            });
+            const data = await res.json();
+            if (res.ok && data.verified) {
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initPage();
+            } else {
+                document.getElementById('pwdError').textContent = data.error || '密码错误';
+            }
+        }
+
+        document.getElementById('committeePassword').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyPassword();
+        });
+
+        async function initPage() {
+            document.getElementById('positionSection').style.display = 'block';
+            document.getElementById('quizSection').style.display = 'block';
+            document.getElementById('newsSection').style.display = 'block';
+            if (currentUser.isAdmin || currentUser.almatyNewsAccess) {
+                document.getElementById('newsForm').style.display = 'flex';
+            }
+            if (currentUser.isAdmin) document.getElementById('adminSection').classList.remove('hidden');
+            loadFiles(); loadQuizzes(); loadNews();
+        }
+
+        async function loadFiles() {
+            const res = await fetch(`/api/files/${committee}`);
+            const files = await res.json();
+            document.getElementById('academicFiles').innerHTML = '';
+            document.getElementById('myPositions').innerHTML = '';
+            const af = files.filter(f => f.type === 'academic');
+            const pf = files.filter(f => f.type === 'position');
+            if (af.length === 0) document.getElementById('academicFiles').innerHTML = '<li>暂无公开学术文件</li>';
+            else af.forEach(f => { const li = document.createElement('li'); li.innerHTML = `<span>📄 ${f.originalName} — ${f.uploaderName}</span> <a href="/api/download/${f.id}" download>下载</a>`; document.getElementById('academicFiles').appendChild(li); });
+            if (pf.length === 0) document.getElementById('myPositions').innerHTML = '<li>暂无立场文件</li>';
+            else pf.forEach(f => { const li = document.createElement('li'); li.innerHTML = `<span>📝 ${f.originalName}</span> <a href="/api/download/${f.id}" download>下载</a>`; document.getElementById('myPositions').appendChild(li); });
+            if (currentUser.isAdmin) {
+                const allUl = document.getElementById('allFiles'); allUl.innerHTML = '';
+                if (files.length === 0) allUl.innerHTML = '<li>暂无文件</li>';
+                else files.forEach(f => { const li = document.createElement('li'); li.innerHTML = `<span>${f.type==='academic'?'📄':'📝'} ${f.originalName} [${f.type==='academic'?'学术':'立场'}] — ${f.uploaderName} — <strong>${f.visible?'可见':'隐藏'}</strong></span> <button onclick="toggleVis('${f.id}')">${f.visible?'设为隐藏':'设为可见'}</button>`; allUl.appendChild(li); });
+            }
+        }
+
+        async function loadQuizzes() {
+            const res = await fetch(`/api/quiz/${committee}`);
+            const quizzes = await res.json();
+            document.getElementById('quizList').innerHTML = quizzes.length === 0 ? '<li>暂无学术测验</li>' : quizzes.map(q => `<li><span>📝 ${q.originalName} — ${q.uploaderName} · ${new Date(q.uploadTime).toLocaleDateString('zh-CN')}</span> <a href="/api/download/quiz/${q.id}">下载</a></li>`).join('');
+            if (currentUser.isAdmin) document.getElementById('allQuizzes').innerHTML = quizzes.length === 0 ? '<li>暂无学术测验</li>' : quizzes.map(q => `<li><span>📝 ${q.originalName} — ${q.uploaderName}</span> <button class="btn-del" onclick="deleteQuiz('${q.id}')">删除</button></li>`).join('');
+        }
+
+        async function loadNews() {
+            const res = await fetch(`/api/news/${committee}`);
+            const news = await res.json();
+            document.getElementById('newsList').innerHTML = news.length === 0 ? '<li>暂无新闻</li>' : news.map(n => `<li><span>📰 ${n.title} — ${n.uploaderName} · ${new Date(n.uploadTime).toLocaleDateString('zh-CN')}</span> <a href="/api/download/news/${n.id}">下载</a></li>`).join('');
+            if (currentUser.isAdmin) document.getElementById('allNews').innerHTML = news.length === 0 ? '<li>暂无新闻</li>' : news.map(n => `<li><span>📰 ${n.title} — ${n.uploaderName}</span> <button class="btn-del" onclick="deleteNews('${n.id}')">删除</button></li>`).join('');
+        }
+
+        document.getElementById('positionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(); fd.append('file', document.getElementById('positionFile').files[0]); fd.append('committee', committee);
+            const res = await fetch('/api/upload/position', { method: 'POST', body: fd });
+            const d = await res.json(); document.getElementById('uploadMsg').textContent = d.message || d.error; document.getElementById('uploadMsg').style.color = res.ok ? 'green' : 'red';
+            if (res.ok) { document.getElementById('positionFile').value = ''; loadFiles(); }
+        });
+
+        document.getElementById('quizForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(); fd.append('file', document.getElementById('quizFile').files[0]); fd.append('committee', committee);
+            const res = await fetch('/api/upload/quiz', { method: 'POST', body: fd });
+            const d = await res.json(); document.getElementById('quizMsg').textContent = d.message || d.error; document.getElementById('quizMsg').style.color = res.ok ? 'green' : 'red';
+            if (res.ok) { document.getElementById('quizFile').value = ''; loadQuizzes(); }
+        });
+
+        document.getElementById('newsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(); fd.append('file', document.getElementById('newsFile').files[0]); fd.append('committee', committee);
+            fd.append('title', document.getElementById('newsTitle').value || document.getElementById('newsFile').files[0].name);
+            const res = await fetch('/api/upload/news', { method: 'POST', body: fd });
+            const d = await res.json(); document.getElementById('newsMsg').textContent = d.message || d.error; document.getElementById('newsMsg').style.color = res.ok ? 'green' : 'red';
+            if (res.ok) { document.getElementById('newsFile').value = ''; document.getElementById('newsTitle').value = ''; loadNews(); }
+        });
+
+        document.getElementById('adminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(); fd.append('file', document.getElementById('adminFile').files[0]); fd.append('committee', committee); fd.append('visible', document.getElementById('visibleCheck').checked);
+            const res = await fetch('/api/upload/admin', { method: 'POST', body: fd });
+            document.getElementById('adminMsg').textContent = (await res.json()).message || '上传成功';
+            if (res.ok) { document.getElementById('adminFile').value = ''; loadFiles(); }
+        });
+
+        async function toggleVis(id) { await fetch(`/api/files/${id}/visibility`, { method: 'PUT' }); loadFiles(); }
+        async function deleteQuiz(id) { if (confirm('确定删除？')) { await fetch(`/api/quiz/${id}`, { method: 'DELETE' }); loadQuizzes(); } }
+        async function deleteNews(id) { if (confirm('确定删除？')) { await fetch(`/api/news/${id}`, { method: 'DELETE' }); loadNews(); } }
+
+        init();
+    </script>
+</body>
+</html>
